@@ -6,9 +6,12 @@ module Completely
     attr_reader :config
 
     class << self
-      def load(config_path, function_name: nil)
-        config = Config.load config_path
-        new config, function_name: function_name
+      def load(path, function_name: nil)
+        new Config.load(path), function_name: function_name
+      end
+
+      def read(io, function_name: nil)
+        new Config.read(io), function_name: function_name
       end
     end
 
