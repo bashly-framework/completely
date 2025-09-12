@@ -15,16 +15,16 @@ module Completely
       param 'CONFIG_PATH', <<~USAGE
         Path to the YAML configuration file [default: completely.yaml].
         Use '-' to read from stdin.
-        
+
         Can also be set by an environment variable.
       USAGE
 
       param 'OUTPUT_PATH', <<~USAGE
         Path to the output bash script.
         Use '-' for stdout.
-        
+
         When not provided, the name of the input file will be used with a .bash extension, unless the input is stdin - in this case the default will be to output to stdout.
-        
+
         Can also be set by an environment variable.
       USAGE
 

@@ -29,7 +29,7 @@ module Completely
     end
 
     def valid?
-      pattern_prefixes.uniq.count == 1
+      pattern_prefixes.uniq.one?
     end
 
     def script

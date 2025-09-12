@@ -89,8 +89,7 @@ describe Commands::Generate do
 
   context 'with stdin and stdout' do
     it 'reads config from stdin and writes to stdout' do
-      allow($stdin).to receive(:tty?).and_return false
-      allow($stdin).to receive(:read).and_return File.read('completely.yaml')
+      allow($stdin).to receive_messages(tty?: false, read: File.read('completely.yaml'))
 
       expect { subject.execute %w[generate -] }
         .to output_approval('cli/generated-script')
@@ -101,8 +100,7 @@ describe Commands::Generate do
     let(:outfile) { 'spec/tmp/stdin-to-file.bash' }
 
     it 'reads config from stdin and writes to file' do
-      allow($stdin).to receive(:tty?).and_return false
-      allow($stdin).to receive(:read).and_return File.read('completely.yaml')
+      allow($stdin).to receive_messages(tty?: false, read: File.read('completely.yaml'))
 
       expect { subject.execute %W[generate - #{outfile}] }.to output_approval('cli/generate/custom-path-stdin')
       expect(File.read outfile).to match_approval('cli/generated-script')

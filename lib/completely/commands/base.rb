@@ -36,7 +36,7 @@ module Completely
 
       def completions
         @completions ||= if config_path == '-'
-          raise Error, "Nothing is piped on stdin" if $stdin.tty?
+          raise Error, 'Nothing is piped on stdin' if $stdin.tty?
 
           Completions.read $stdin, function_name: args['--function']
         else
