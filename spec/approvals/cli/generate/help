@@ -1,4 +1,4 @@
-Generate the bash completion script
+Generate the bash completion script to file or stdout
 
 Usage:
   completely generate [CONFIG_PATH OUTPUT_PATH --function NAME --wrap NAME]

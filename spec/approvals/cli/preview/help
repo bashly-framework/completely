@@ -1,4 +1,4 @@
-Generate the bash completion script to STDOUT
+Generate the bash completion script to stdout
 
 Usage:
   completely preview [CONFIG_PATH --function NAME]

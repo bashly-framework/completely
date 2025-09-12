@@ -2,8 +2,8 @@ Completely - Bash Completions Generator
 
 Commands:
   init       Create a new sample YAML configuration file
-  preview    Generate the bash completion script to STDOUT
-  generate   Generate the bash completion script
+  preview    Generate the bash completion script to stdout
+  generate   Generate the bash completion script to file or stdout
   test       Test completions
   install    Install a bash completion script
   uninstall  Uninstall a bash completion script

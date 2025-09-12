@@ -3,7 +3,7 @@ require 'completely/commands/base'
 module Completely
   module Commands
     class Generate < Base
-      help 'Generate the bash completion script'
+      help 'Generate the bash completion script to file or stdout'
 
       usage 'completely generate [CONFIG_PATH OUTPUT_PATH --function NAME --wrap NAME]'
       usage 'completely generate (-h|--help)'
