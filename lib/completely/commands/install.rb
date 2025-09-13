@@ -35,11 +35,11 @@ module Completely
     private
 
       def installer
-        Installer.new program: args['PROGRAM'], script_path: script_path
+        @installer ||= Installer.new(program: args['PROGRAM'], script_path: script_path)
       end
 
       def script_path
-        args['SCRIPT_PATH'] || 'completely.bash'
+        @script_path ||= args['SCRIPT_PATH'] || 'completely.bash'
       end
     end
   end
