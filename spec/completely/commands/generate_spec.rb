@@ -1,8 +1,14 @@
 describe Commands::Generate do
   subject { described_class.new }
 
-  before { system 'cp lib/completely/templates/sample.yaml completely.yaml' }
-  after  { system 'rm -f completely.yaml' }
+  before do
+    reset_tmp_dir
+    system 'cp lib/completely/templates/sample.yaml completely.yaml'
+  end
+
+  after do
+    system 'rm -f completely.yaml'
+  end
 
   context 'with --help' do
     it 'shows long usage' do
@@ -78,6 +84,26 @@ describe Commands::Generate do
       expect { subject.execute %w[generate completely.yaml spec/tmp/out.bash] }
         .to output_approval('cli/generate/custom-out-path')
       expect(File.read 'spec/tmp/out.bash').to match_approval('cli/generated-script')
+    end
+  end
+
+  context 'with stdin and stdout' do
+    it 'reads config from stdin and writes to stdout' do
+      allow($stdin).to receive_messages(tty?: false, read: File.read('completely.yaml'))
+
+      expect { subject.execute %w[generate -] }
+        .to output_approval('cli/generated-script')
+    end
+  end
+
+  context 'with stdin and output path' do
+    let(:outfile) { 'spec/tmp/stdin-to-file.bash' }
+
+    it 'reads config from stdin and writes to file' do
+      allow($stdin).to receive_messages(tty?: false, read: File.read('completely.yaml'))
+
+      expect { subject.execute %W[generate - #{outfile}] }.to output_approval('cli/generate/custom-path-stdin')
+      expect(File.read outfile).to match_approval('cli/generated-script')
     end
   end
 

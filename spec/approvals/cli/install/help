@@ -25,3 +25,4 @@ Parameters:
 
   SCRIPT_PATH
     Path to the source bash script [default: completely.bash].
+    Use '-' to provide the script via stdin.

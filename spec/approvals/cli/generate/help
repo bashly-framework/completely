@@ -1,4 +1,4 @@
-Generate the bash completion script to a file
+Generate the bash completion script to file or stdout
 
 Usage:
   completely generate [CONFIG_PATH OUTPUT_PATH --function NAME --wrap NAME]
@@ -18,12 +18,18 @@ Options:
 Parameters:
   CONFIG_PATH
     Path to the YAML configuration file [default: completely.yaml].
+    Use '-' to read from stdin.
+    
     Can also be set by an environment variable.
 
   OUTPUT_PATH
     Path to the output bash script.
+    Use '-' for stdout.
+    
     When not provided, the name of the input file will be used with a .bash
-    extension.
+    extension, unless the input is stdin - in this case the default will be to
+    output to stdout.
+    
     Can also be set by an environment variable.
 
 Environment Variables:

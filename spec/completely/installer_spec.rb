@@ -25,6 +25,16 @@ describe Installer do
       expect(subject.target_path)
         .to eq '/usr/share/bash-completion/completions/completely-test'
     end
+
+    # This method will not be called if there is no completions path
+    # The test is here to cover the nil fallback
+    context 'when no paths found' do
+      it 'returns nil as the base path' do
+        allow(subject).to receive(:target_directories).and_return([])
+
+        expect(subject.target_path).to eq '/completely-test'
+      end
+    end
   end
 
   describe '#install_command' do

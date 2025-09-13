@@ -4,6 +4,13 @@ describe Completions do
   let(:path) { "spec/fixtures/#{file}.yaml" }
   let(:file) { 'basic' }
 
+  describe '::read' do
+    it 'reads from io' do
+      io = double :io, read: "cli: [--help, --version]"
+      expect(described_class.read(io).config.config).to eq({ 'cli' => %w[--help --version] })
+    end
+  end
+
   describe '#valid?' do
     context 'when all patterns start with the same word' do
       it 'returns true' do

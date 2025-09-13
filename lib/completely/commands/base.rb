@@ -35,7 +35,13 @@ module Completely
       end
 
       def completions
-        @completions ||= Completions.load(config_path, function_name: args['--function'])
+        @completions ||= if config_path == '-'
+          raise Error, 'Nothing is piped on stdin' if $stdin.tty?
+
+          Completions.read $stdin, function_name: args['--function']
+        else
+          Completions.load config_path, function_name: args['--function']
+        end
       end
 
       def config_path
@@ -43,7 +49,11 @@ module Completely
       end
 
       def output_path
-        @output_path ||= args['OUTPUT_PATH'] || ENV['COMPLETELY_OUTPUT_PATH'] || "#{config_basename}.bash"
+        @output_path ||= args['OUTPUT_PATH'] || ENV['COMPLETELY_OUTPUT_PATH'] || stdout || "#{config_basename}.bash"
+      end
+
+      def stdout
+        @stdout ||= config_path == '-' ? '-' : nil
       end
 
       def config_basename

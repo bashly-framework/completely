@@ -3,17 +3,14 @@ module Completely
     attr_reader :config, :options
 
     class << self
-      def load(config_path)
-        begin
-          config = YAML.load_file config_path, aliases: true
-        rescue ArgumentError
-          # :nocov:
-          config = YAML.load_file config_path
-          # :nocov:
-        end
-
-        new config
+      def parse(str)
+        new YAML.load(str, aliases: true)
+      rescue Psych::Exception => e
+        raise ParseError, "Invalid YAML: #{e.message}"
       end
+
+      def load(path) = parse(File.read(path))
+      def read(io) = parse(io.read)
     end
 
     def initialize(config)
