@@ -73,15 +73,13 @@ module Completely
     end
 
     def completions_path
-      @completions_path ||= completions_path!
-    end
+      @completions_path ||= begin
+        target_directories.each do |target|
+          return target if Dir.exist? target
+        end
 
-    def completions_path!
-      target_directories.each do |target|
-        return target if Dir.exist? target
+        nil
       end
-
-      nil
     end
   end
 end

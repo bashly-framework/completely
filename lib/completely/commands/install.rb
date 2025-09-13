@@ -1,3 +1,4 @@
+require 'tempfile'
 require 'completely/commands/base'
 
 module Completely
@@ -17,9 +18,19 @@ module Completely
       option '-d --dry', 'Show the installation command but do not run it'
 
       param 'PROGRAM', 'Name of the program the completions are for.'
-      param 'SCRIPT_PATH', 'Path to the source bash script [default: completely.bash].'
+      param 'SCRIPT_PATH', <<~USAGE
+        Path to the source bash script [default: completely.bash].
+        Use '-' to provide the script via stdin.
+      USAGE
 
       def run
+        if script_path == '-'
+          raise InstallError, "Nothing is piped on stdin" if $stdin.tty?
+
+          @script_path = tempfile.path
+          File.write script_path, $stdin.read
+        end
+
         if args['--dry']
           puts installer.install_command_string
           return
@@ -30,6 +41,10 @@ module Completely
 
         say "Saved m`#{installer.target_path}`"
         say 'You may need to restart your session to test it'
+      end
+
+      def tempfile
+        @tempfile ||= Tempfile.new('stdin-completely-')
       end
 
     private

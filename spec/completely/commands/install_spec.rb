@@ -34,6 +34,20 @@ describe Commands::Install do
     end
   end
 
+  context 'with PROGRAM - (stdin)' do
+    it 'invokes the Installer using a temp file' do
+      allow(subject).to receive(:installer).and_return(mock_installer)
+      allow($stdin).to receive_messages(tty?: false, read: 'dummy data')
+
+      expect(mock_installer).to receive(:install)
+
+      expect { subject.execute %w[install completely-test -] }
+        .to output_approval('cli/install/stdin-install')
+
+      expect(File.read subject.tempfile.path).to eq 'dummy data'
+    end
+  end
+
   context 'with PROGRAM --dry' do
     it 'shows the command and does not install anything' do
       expect(mock_installer).not_to receive(:install)
@@ -42,6 +56,29 @@ describe Commands::Install do
         .to output_approval('cli/install/dry')
     end
   end
+
+  context 'with PROGRAM - --dry (stdin)' do
+    it 'shows the command and does not install anything' do
+      allow($stdin).to receive_messages(tty?: false, read: 'dummy data')
+
+      expect(mock_installer).not_to receive(:install)
+
+      expect { subject.execute %w[install completely-test - --dry] }
+        .to output_approval('cli/install/stdin-dry')
+        .except(/[^\s]*stdin-completely-[^\s]*/, '<tmpfile-path>')
+    end
+
+    context 'when stdin is empty' do
+      it 'raises InstallError' do
+        allow($stdin).to receive_messages(tty?: true, read: nil)
+        expect(mock_installer).not_to receive(:install)
+
+        expect { subject.execute %w[install completely-test - --dry] }
+          .to raise_error(InstallError, 'Nothing is piped on stdin')
+      end
+    end
+  end
+
 
   context 'when the installer fails' do
     it 'raises an error' do
