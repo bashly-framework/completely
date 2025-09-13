@@ -6,7 +6,7 @@ describe Completions do
 
   describe '::read' do
     it 'reads from io' do
-      io = double :io, read: "cli: [--help, --version]"
+      io = double :io, read: 'cli: [--help, --version]'
       expect(described_class.read(io).config.config).to eq({ 'cli' => %w[--help --version] })
     end
   end

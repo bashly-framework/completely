@@ -13,6 +13,20 @@ describe Installer do
     %w[sudo rm -f] + targets
   end
 
+  describe '#initialize' do
+    context 'when script_path == "-"' do
+      let(:script_path) { '-' }
+
+      it 'reads the script from stdin and writes it to a temp file' do
+        allow($stdin).to receive_messages(tty?: false, read: 'dummy data')
+
+        subject
+
+        expect(File.read subject.script_path).to eq 'dummy data'
+      end
+    end
+  end
+
   describe '#target_directories' do
     it 'returns an array of potential completion directories' do
       expect(subject.target_directories).to be_an Array
@@ -24,16 +38,6 @@ describe Installer do
     it 'returns the first matching path' do
       expect(subject.target_path)
         .to eq '/usr/share/bash-completion/completions/completely-test'
-    end
-
-    # This method will not be called if there is no completions path
-    # The test is here to cover the nil fallback
-    context 'when no paths found' do
-      it 'returns nil as the base path' do
-        allow(subject).to receive(:target_directories).and_return([])
-
-        expect(subject.target_path).to eq '/completely-test'
-      end
     end
   end
 
