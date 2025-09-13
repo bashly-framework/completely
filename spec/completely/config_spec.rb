@@ -3,7 +3,7 @@ describe Config do
 
   let(:path) { "spec/fixtures/#{file}.yaml" }
   let(:file) { 'nested' }
-  let(:config_string) { "cli: [--help, --version]" }
+  let(:config_string) { 'cli: [--help, --version]' }
   let(:config_hash) { { 'cli' => %w[--help --version] } }
 
   describe '::parse' do
@@ -13,7 +13,7 @@ describe Config do
 
     context 'when the string is not a valid YAML' do
       it 'raises ParseError' do
-        expect { described_class.parse("not: a: yaml") }.to raise_error(Completely::ParseError)
+        expect { described_class.parse('not: a: yaml') }.to raise_error(Completely::ParseError)
       end
     end
   end

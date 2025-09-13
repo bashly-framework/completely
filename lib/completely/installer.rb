@@ -3,6 +3,13 @@ module Completely
     attr_reader :program, :script_path
 
     def initialize(program:, script_path: nil)
+      if script_path == '-'
+        raise InstallError, 'Nothing is piped on stdin' if $stdin.tty?
+
+        script_path = tempfile.path
+        File.write script_path, $stdin.read
+      end
+
       @program = program
       @script_path = script_path
     end
@@ -60,6 +67,10 @@ module Completely
 
   private
 
+    def tempfile
+      @tempfile ||= Tempfile.new('stdin-completely-')
+    end
+
     def target_exist?
       File.exist? target_path
     end
@@ -74,11 +85,15 @@ module Completely
 
     def completions_path
       @completions_path ||= begin
+        result = nil
         target_directories.each do |target|
-          return target if Dir.exist? target
+          if Dir.exist? target
+            result = target
+            break
+          end
         end
 
-        nil
+        result
       end
     end
   end

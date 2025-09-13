@@ -43,8 +43,6 @@ describe Commands::Install do
 
       expect { subject.execute %w[install completely-test -] }
         .to output_approval('cli/install/stdin-install')
-
-      expect(File.read subject.tempfile.path).to eq 'dummy data'
     end
   end
 
@@ -78,7 +76,6 @@ describe Commands::Install do
       end
     end
   end
-
 
   context 'when the installer fails' do
     it 'raises an error' do

@@ -24,13 +24,6 @@ module Completely
       USAGE
 
       def run
-        if script_path == '-'
-          raise InstallError, "Nothing is piped on stdin" if $stdin.tty?
-
-          @script_path = tempfile.path
-          File.write script_path, $stdin.read
-        end
-
         if args['--dry']
           puts installer.install_command_string
           return
@@ -43,15 +36,11 @@ module Completely
         say 'You may need to restart your session to test it'
       end
 
-      def tempfile
-        @tempfile ||= Tempfile.new('stdin-completely-')
-      end
-
-    private
-
       def installer
         @installer ||= Installer.new(program: args['PROGRAM'], script_path: script_path)
       end
+
+    private
 
       def script_path
         @script_path ||= args['SCRIPT_PATH'] || 'completely.bash'
