@@ -18,7 +18,10 @@ _mygit_completions_filter() {
   local result=()
 
   # words the user already typed (excluding the command itself)
-  local used=("${COMP_WORDS[@]:1:$((COMP_CWORD - 1))}")
+  local used=()
+  if ((COMP_CWORD > 1)); then
+    used=("${COMP_WORDS[@]:1:$((COMP_CWORD - 1))}")
+  fi
 
   if [[ "${cur:0:1}" == "-" ]]; then
     # Completing an option: offer everything (including options)
@@ -46,8 +49,13 @@ _mygit_completions_filter() {
 
 _mygit_completions() {
   local cur=${COMP_WORDS[COMP_CWORD]}
-  local compwords=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
+  local compwords=()
+  if ((COMP_CWORD > 0)); then
+    compwords=("${COMP_WORDS[@]:1:$((COMP_CWORD - 1))}")
+  fi
   local compline="${compwords[*]}"
+
+  COMPREPLY=()
 
   case "$compline" in
     'status'*'--branch')
