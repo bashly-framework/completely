@@ -13,17 +13,21 @@ describe Installer do
     %w[sudo rm -f] + targets
   end
 
-  describe '#initialize' do
-    context 'when script_path == "-"' do
-      let(:script_path) { '-' }
+  describe '::from_io' do
+    let(:io) { StringIO.new 'dummy data' }
+    subject { described_class.from_io program:, io: }
 
-      it 'reads the script from stdin and writes it to a temp file' do
-        allow($stdin).to receive_messages(tty?: false, read: 'dummy data')
+    it 'reads the script from io and writes it to a temp file' do
+      expect(File.read subject.script_path).to eq 'dummy data'
+    end
+  end
 
-        subject
+  describe '::from_string' do
+    let(:string) { 'dummy data' }
+    subject { described_class.from_string program:, string: }
 
-        expect(File.read subject.script_path).to eq 'dummy data'
-      end
+    it 'reads the script from io and writes it to a temp file' do
+      expect(File.read subject.script_path).to eq 'dummy data'
     end
   end
 

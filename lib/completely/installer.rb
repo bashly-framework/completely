@@ -1,15 +1,39 @@
 module Completely
   class Installer
+    class << self
+      def from_io(program:, io: nil)
+        io ||= $stdin
+
+        raise InstallError, "io must respond to #read" unless io.respond_to?(:read)
+        raise InstallError, "io is closed" if io.respond_to?(:closed?) && io.closed?
+
+        from_string program:, string: io.read
+      end
+
+      def from_string(program:, string:)
+        tempfile = create_tempfile
+        script_path = tempfile.path
+        begin
+          File.write script_path, string
+        ensure
+          tempfile.close
+        end
+
+        new program:, script_path:
+      end
+
+      def create_tempfile
+        tempfile = Tempfile.new ["completely-", '.bash']
+        tempfiles.push tempfile
+        tempfile
+      end
+
+      def tempfiles = @tempfiles ||= []
+    end
+
     attr_reader :program, :script_path
 
     def initialize(program:, script_path: nil)
-      if script_path == '-'
-        raise InstallError, 'Nothing is piped on stdin' if $stdin.tty?
-
-        script_path = tempfile.path
-        File.write script_path, $stdin.read
-      end
-
       @program = program
       @script_path = script_path
     end
@@ -66,10 +90,6 @@ module Completely
     end
 
   private
-
-    def tempfile
-      @tempfile ||= Tempfile.new('stdin-completely-')
-    end
 
     def target_exist?
       File.exist? target_path
