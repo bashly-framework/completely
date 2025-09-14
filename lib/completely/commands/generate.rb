@@ -54,6 +54,7 @@ module Completely
         installer = Installer.from_string program: args['--install'], string: content
         success = installer.install force: true
         raise InstallError, "Failed running command:\nnb`#{installer.install_command_string}`" unless success
+
         say "Saved m`#{installer.target_path}`"
         say 'You may need to restart your session to test it'
       end
