@@ -14,8 +14,9 @@ describe Installer do
   end
 
   describe '::from_io' do
-    let(:io) { StringIO.new 'dummy data' }
     subject { described_class.from_io program:, io: }
+
+    let(:io) { StringIO.new 'dummy data' }
 
     it 'reads the script from io and writes it to a temp file' do
       expect(File.read subject.script_path).to eq 'dummy data'
@@ -23,8 +24,9 @@ describe Installer do
   end
 
   describe '::from_string' do
-    let(:string) { 'dummy data' }
     subject { described_class.from_string program:, string: }
+
+    let(:string) { 'dummy data' }
 
     it 'reads the script from io and writes it to a temp file' do
       expect(File.read subject.script_path).to eq 'dummy data'
