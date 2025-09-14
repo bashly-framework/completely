@@ -1,4 +1,3 @@
-require 'tempfile'
 require 'completely/commands/base'
 
 module Completely
@@ -37,14 +36,18 @@ module Completely
       end
 
       def installer
-        @installer ||= Installer.new(program: args['PROGRAM'], script_path: script_path)
+        @installer ||= if stdin?
+          Installer.from_io program:
+        else
+          Installer.new program:, script_path: input_script_path
+        end
       end
 
     private
 
-      def script_path
-        @script_path ||= args['SCRIPT_PATH'] || 'completely.bash'
-      end
+      def program = args['PROGRAM']
+      def stdin? = input_script_path == '-'
+      def input_script_path = args['SCRIPT_PATH'] || 'completely.bash'
     end
   end
 end
