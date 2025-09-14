@@ -41,8 +41,10 @@ module Completely
 
         if args['--install']
           install output
+        elsif output_path == '-'
+          show output
         else
-          show_or_save output
+          save output
         end
       end
 
@@ -56,13 +58,11 @@ module Completely
         say 'You may need to restart your session to test it'
       end
 
-      def show_or_save(content)
-        if output_path == '-'
-          puts content
-        else
-          File.write output_path, content
-          say "Saved m`#{output_path}`"
-        end
+      def show(content) = puts content
+      
+      def save(content)
+        File.write output_path, content
+        say "Saved m`#{output_path}`"
         syntax_warning unless completions.valid?
       end
 
