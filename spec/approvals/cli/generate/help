@@ -2,6 +2,7 @@ Generate the bash completion script to file or stdout
 
 Usage:
   completely generate [CONFIG_PATH OUTPUT_PATH --function NAME --wrap NAME]
+  completely generate [CONFIG_PATH --install PROGRAM --function NAME]
   completely generate (-h|--help)
 
 Options:
@@ -11,6 +12,9 @@ Options:
   -w --wrap NAME
     Wrap the completion script inside a function that echos the script. This is
     useful if you wish to embed it directly in your script.
+
+  -i --install PROGRAM
+    Install the generated script as completions for PROGRAM.
 
   -h --help
     Show this help
