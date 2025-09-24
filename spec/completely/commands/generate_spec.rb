@@ -116,7 +116,28 @@ describe Commands::Generate do
     end
   end
 
-  context 'with --wrapper NAME' do
+  context 'with --install PROGRAM' do
+    let(:mock_installer) do
+      instance_double Installer,
+        install: true,
+        install_command_string: 'stubbed install_command_string',
+        target_path: 'stubbed target_path'
+    end
+
+    it 'passes the generated script to the installer' do
+      allow(Installer).to receive(:from_string)
+        .with(
+          program: 'mycli',
+          string: a_string_matching(/bash completions script/)          
+        ).and_return(mock_installer)
+
+      expect(mock_installer).to receive(:install)
+
+      expect { subject.execute %w[generate --install mycli] }.to output_approval('cli/generate/install')
+    end
+  end
+
+  context 'with --wrap NAME' do
     after { system 'rm -f completely.bash' }
 
     it 'wraps the script in a function' do
