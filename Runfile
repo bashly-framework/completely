@@ -24,3 +24,9 @@ action :schema do
   end
 end
 
+help   'Run preconfigured shfmt on any script'
+usage  'shfmt SCRIPT'
+action :shfmt do |args|
+  system "shfmt -d -i 2 -ci #{args['SCRIPT']}"
+  say $?.success? ? 'g`PASS`' : 'r`FAIL`'
+end

@@ -4,8 +4,8 @@ module Completely
       def from_io(program:, io: nil)
         io ||= $stdin
 
-        raise InstallError, "io must respond to #read" unless io.respond_to?(:read)
-        raise InstallError, "io is closed" if io.respond_to?(:closed?) && io.closed?
+        raise InstallError, 'io must respond to #read' unless io.respond_to?(:read)
+        raise InstallError, 'io is closed' if io.respond_to?(:closed?) && io.closed?
 
         from_string program:, string: io.read
       end
@@ -23,7 +23,7 @@ module Completely
       end
 
       def create_tempfile
-        tempfile = Tempfile.new ["completely-", '.bash']
+        tempfile = Tempfile.new ['completely-', '.bash']
         tempfiles.push tempfile
         tempfile
       end
