@@ -5,7 +5,7 @@
 # Modifying it manually is not recommended
 
 _cli_completions_filter() {
-  local words="$1"
+  local words=("$@")
   local cur=${COMP_WORDS[COMP_CWORD]}
   local result=()
 
@@ -17,12 +17,12 @@ _cli_completions_filter() {
 
   if [[ "${cur:0:1}" == "-" ]]; then
     # Completing an option: offer everything (including options)
-    echo "$words"
+    result=("${words[@]}")
 
   else
     # Completing a non-option: offer only non-options,
     # and don't re-offer ones already used earlier in the line.
-    for word in $words; do
+    for word in "${words[@]}"; do
       [[ "${word:0:1}" == "-" ]] && continue
 
       local seen=0
@@ -34,9 +34,15 @@ _cli_completions_filter() {
       done
       ((!seen)) && result+=("$word")
     done
-
-    echo "${result[*]}"
   fi
+
+  local escaped=()
+  for word in "${result[@]}"; do
+    printf -v word '%q' "$word"
+    escaped+=("$word")
+  done
+
+  echo "${escaped[*]}"
 }
 
 _cli_completions() {
@@ -51,19 +57,19 @@ _cli_completions() {
 
   case "$compline" in
     'command childcommand'*)
-      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--quiet --verbose -q -v")" -- "$cur")
+      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--quiet" "--verbose" "-q" "-v")" -- "$cur")
       ;;
 
     'command subcommand'*)
-      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--force --quiet")" -- "$cur")
+      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--force" "--quiet")" -- "$cur")
       ;;
 
     'command'*)
-      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "subcommand childcommand")" -- "$cur")
+      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "subcommand" "childcommand")" -- "$cur")
       ;;
 
     *)
-      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--help --version command conquer")" -- "$cur")
+      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--help" "--version" "command" "conquer")" -- "$cur")
       ;;
 
   esac
