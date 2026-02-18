@@ -16,6 +16,7 @@ _mygit_completions_filter() {
   local words=("$@")
   local cur=${COMP_WORDS[COMP_CWORD]}
   local result=()
+  local want_options=0
 
   # words the user already typed (excluding the command itself)
   local used=()
@@ -23,34 +24,26 @@ _mygit_completions_filter() {
     used=("${COMP_WORDS[@]:1:$((COMP_CWORD - 1))}")
   fi
 
-  if [[ "${cur:0:1}" == "-" ]]; then
-    # Completing an option: offer everything (including options)
-    result=("${words[@]}")
-
-  else
-    # Completing a non-option: offer only non-options,
-    # and don't re-offer ones already used earlier in the line.
-    for word in "${words[@]}"; do
+  # Completing an option: offer everything.
+  # Completing a non-option: drop options and already-used words.
+  [[ "${cur:0:1}" == "-" ]] && want_options=1
+  for word in "${words[@]}"; do
+    if ((!want_options)); then
       [[ "${word:0:1}" == "-" ]] && continue
 
-      local seen=0
       for u in "${used[@]}"; do
         if [[ "$u" == "$word" ]]; then
-          seen=1
-          break
+          continue 2
         fi
       done
-      ((!seen)) && result+=("$word")
-    done
-  fi
+    fi
 
-  local escaped=()
-  for word in "${result[@]}"; do
+    # compgen -W expects shell-escaped words in one space-delimited string.
     printf -v word '%q' "$word"
-    escaped+=("$word")
+    result+=("$word")
   done
 
-  echo "${escaped[*]}"
+  echo "${result[*]}"
 }
 
 _mygit_completions() {
