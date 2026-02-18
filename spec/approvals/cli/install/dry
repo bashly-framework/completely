@@ -1,1 +1,1 @@
-cp completely.bash /home/vagrant/.local/share/bash-completion/completions/completely-test
+cp completely.bash /home/USER/.local/share/bash-completion/completions/completely-test
