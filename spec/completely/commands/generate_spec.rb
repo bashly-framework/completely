@@ -119,16 +119,16 @@ describe Commands::Generate do
   context 'with --install PROGRAM' do
     let(:mock_installer) do
       instance_double Installer,
-        install: true,
+        install:                true,
         install_command_string: 'stubbed install_command_string',
-        target_path: 'stubbed target_path'
+        target_path:            'stubbed target_path'
     end
 
     it 'passes the generated script to the installer' do
       allow(Installer).to receive(:from_string)
         .with(
           program: 'mycli',
-          string: a_string_matching(/bash completions script/)          
+          string:  a_string_matching(/bash completions script/)
         ).and_return(mock_installer)
 
       expect(mock_installer).to receive(:install)

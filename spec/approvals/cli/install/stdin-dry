@@ -1,1 +1,1 @@
-sudo cp <tmpfile-path> /usr/share/bash-completion/completions/completely-test
+cp <tmpfile-path> /home/USER/.local/share/bash-completion/completions/completely-test
