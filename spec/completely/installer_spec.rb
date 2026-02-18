@@ -4,14 +4,9 @@ describe Installer do
   let(:leeway) { RUBY_VERSION < '3.2.0' ? 0 : 3 }
   let(:program) { 'completely-test' }
   let(:script_path) { 'completions.bash' }
-  let(:targets) { subject.target_directories.map { |dir| "#{dir}/#{program}" } }
-  let(:install_command) do
-    %W[sudo cp #{subject.script_path} #{subject.target_path}]
-  end
-
-  let(:uninstall_command) do
-    %w[sudo rm -f] + targets
-  end
+  let(:target_path) { "#{Dir.home}/.local/share/bash-completion/completions/#{program}" }
+  let(:install_command) { %W[cp #{subject.script_path} #{subject.target_path}] }
+  let(:uninstall_command) { %W[rm -f #{subject.target_path}] }
 
   describe '::from_io' do
     subject { described_class.from_io program:, io: }
@@ -33,33 +28,58 @@ describe Installer do
     end
   end
 
-  describe '#target_directories' do
-    it 'returns an array of potential completion directories' do
-      expect(subject.target_directories).to be_an Array
-      expect(subject.target_directories.size).to eq 4
-    end
-  end
-
   describe '#target_path' do
-    it 'returns the first matching path' do
-      expect(subject.target_path)
-        .to eq '/usr/share/bash-completion/completions/completely-test'
+    it 'returns a user-level target path' do
+      expect(subject.target_path).to eq target_path
+    end
+
+    context 'when BASH_COMPLETION_USER_DIR is set' do
+      around do |example|
+        original = ENV['BASH_COMPLETION_USER_DIR']
+        ENV['BASH_COMPLETION_USER_DIR'] = '/tmp/completely-user-dir'
+        example.run
+      ensure
+        ENV['BASH_COMPLETION_USER_DIR'] = original
+      end
+
+      it 'uses BASH_COMPLETION_USER_DIR/completions' do
+        expect(subject.target_path).to eq '/tmp/completely-user-dir/completions/completely-test'
+      end
+    end
+
+    context 'when XDG_DATA_HOME is set' do
+      around do |example|
+        original = ENV['XDG_DATA_HOME']
+        ENV['XDG_DATA_HOME'] = '/tmp/completely-xdg'
+        example.run
+      ensure
+        ENV['XDG_DATA_HOME'] = original
+      end
+
+      it 'uses XDG_DATA_HOME/bash-completion/completions' do
+        expect(subject.target_path).to eq '/tmp/completely-xdg/bash-completion/completions/completely-test'
+      end
+    end
+
+    context 'when BASH_COMPLETION_USER_DIR has multiple entries' do
+      around do |example|
+        original = ENV['BASH_COMPLETION_USER_DIR']
+        ENV['BASH_COMPLETION_USER_DIR'] = ':/tmp/completely-first:/tmp/completely-second'
+        example.run
+      ensure
+        ENV['BASH_COMPLETION_USER_DIR'] = original
+      end
+
+      it 'uses the first non-empty entry' do
+        expect(subject.target_path).to eq '/tmp/completely-first/completions/completely-test'
+      end
     end
   end
 
   describe '#install_command' do
     it 'returns a copy command as an array' do
       expect(subject.install_command)
-        .to eq %w[sudo cp completions.bash /usr/share/bash-completion/completions/completely-test]
-    end
-
-    context 'when the user is root' do
-      it 'returns the command without sudo' do
-        allow(subject).to receive(:root_user?).and_return true
-
-        expect(subject.install_command)
-          .to eq %w[cp completions.bash /usr/share/bash-completion/completions/completely-test]
-      end
+        .to eq %W[cp completions.bash #{target_path}]
     end
   end
 
@@ -71,15 +91,7 @@ describe Installer do
 
   describe '#uninstall_command' do
     it 'returns an rm command as an array' do
-      expect(subject.uninstall_command).to eq %w[sudo rm -f] + targets
-    end
-
-    context 'when the user is root' do
-      it 'returns the command without sudo' do
-        allow(subject).to receive(:root_user?).and_return true
-
-        expect(subject.uninstall_command).to eq %w[rm -f] + targets
-      end
+      expect(subject.uninstall_command).to eq %W[rm -f #{target_path}]
     end
   end
 
@@ -95,15 +107,7 @@ describe Installer do
 
     before do
       allow(subject).to receive_messages(script_path: existing_file, target_path: missing_file)
-    end
-
-    context 'when the completions_path cannot be found' do
-      it 'raises an error' do
-        allow(subject).to receive(:completions_path).and_return nil
-
-        expect { subject.install }.to raise_approval('installer/install-no-dir')
-          .diff(leeway)
-      end
+      allow(FileUtils).to receive(:mkdir_p)
     end
 
     context 'when the script cannot be found' do
@@ -128,6 +132,7 @@ describe Installer do
       it 'proceeds to install' do
         allow(subject).to receive(:target_path).and_return existing_file
 
+        expect(FileUtils).to receive(:mkdir_p)
         expect(subject).to receive(:system).with(*install_command)
 
         subject.install force: true
@@ -138,6 +143,7 @@ describe Installer do
       it 'proceeds to install' do
         allow(subject).to receive(:target_path).and_return missing_file
 
+        expect(FileUtils).to receive(:mkdir_p)
         expect(subject).to receive(:system).with(*install_command)
 
         subject.install

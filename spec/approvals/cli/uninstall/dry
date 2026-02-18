@@ -1,1 +1,1 @@
-sudo rm -f /usr/share/bash-completion/completions/completely-test /usr/local/etc/bash_completion.d/completely-test /home/vagrant/.local/share/bash-completion/completion/completely-test /home/vagrant/.bash_completion.d/completely-test
+rm -f /home/vagrant/.local/share/bash-completion/completions/completely-test
