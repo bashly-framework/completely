@@ -22,12 +22,12 @@ describe Commands::Generate do
       expect(File.read 'completely.bash').to match_approval('cli/generated-script')
     end
 
-    it 'generates a shellcheck compliant script' do
+    it 'generates a shellcheck compliant script', :script_quality do
       expect { subject.execute %w[generate] }.to output_approval('cli/generate/no-args')
       expect(`shellcheck completely.bash 2>&1`).to be_empty
     end
 
-    it 'generates a shfmt compliant script' do
+    it 'generates a shfmt compliant script', :script_quality do
       expect { subject.execute %w[generate] }.to output_approval('cli/generate/no-args')
       expect(`shfmt -d -i 2 -ci completely.bash 2>&1`).to be_empty
     end

@@ -1,0 +1,3 @@
+dynamic:
+- $(cat dynamic.txt)
+- foo bar

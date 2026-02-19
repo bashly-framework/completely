@@ -9,7 +9,7 @@ ftp:
   expected: [download]
 
 - compline: "ftp download "
-  expected: [another-dir, dir with spaces, dummy-dir, file with spaces.txt, ftp.yaml, gradual.yaml, wildcard.yaml]
+  expected: [another-dir, dir with spaces, dummy-dir, dynamic.txt, dynamic.yaml, file with spaces.txt, ftp.yaml, gradual.yaml, wildcard.yaml]
 
 - compline: "ftp download -"
   expected: [--help, --override]
@@ -28,6 +28,16 @@ ftp:
 
 - compline: "/anything/goes/ftp list -"
   expected: [--help, --short]
+
+dynamic:
+- compline: "dynamic "
+  expected: [foo bar, hello, help]
+
+- compline: "dynamic h"
+  expected: [hello, help]
+
+- compline: "dynamic f"
+  expected: [foo bar]
 
 gradual:
 - compline: "cli "
@@ -93,4 +103,3 @@ wildcard:
 
 - compline: "wildcard download --contest "
   expected: [everything, nothing]
-

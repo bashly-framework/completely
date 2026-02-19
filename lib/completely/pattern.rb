@@ -1,5 +1,7 @@
 module Completely
   class Pattern
+    DYNAMIC_WORD_PREFIX = '__completely_dynamic__'
+
     attr_reader :text, :completions, :function_name
 
     def initialize(text, completions, function_name)
@@ -54,12 +56,24 @@ module Completely
     def compgen!
       result = []
       result << actions.join(' ').to_s if actions.any?
-      result << %[-W "$(#{function_name} #{quoted_words.join ' '})"] if words.any?
+      result << %[-W "$(#{function_name} #{serialized_words.join ' '})"] if words.any?
       result.any? ? result.join(' ') : nil
     end
 
-    def quoted_words
-      @quoted_words ||= words.map { |word| %("#{escape_for_double_quotes word}") }
+    def serialized_words
+      @serialized_words ||= words.map { |word| serialize_word(word) }
+    end
+
+    def serialize_word(word)
+      if dynamic_word?(word)
+        return %("#{DYNAMIC_WORD_PREFIX}#{escape_for_double_quotes word}")
+      end
+
+      %("#{escape_for_double_quotes word}")
+    end
+
+    def dynamic_word?(word)
+      word.match?(/\A\$\(.+\)\z/)
     end
 
     def escape_for_double_quotes(word)
