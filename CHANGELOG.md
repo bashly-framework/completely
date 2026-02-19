@@ -1,6 +1,15 @@
 Changelog
 ========================================
 
+v0.7.4 - 2026-02-19
+----------------------------------------
+
+- Fix completion escaping [`dce16c3`](https://github.com/bashly-framework/completely/commit/dce16c3)
+- Refactor template filter function [`834ed78`](https://github.com/bashly-framework/completely/commit/834ed78)
+- Update completions installer paths [`338d567`](https://github.com/bashly-framework/completely/commit/338d567)
+- Compare [`v0.7.3..v0.7.4`](https://github.com/bashly-framework/completely/compare/v0.7.3..v0.7.4)
+
+
 v0.7.3 - 2025-09-24
 ----------------------------------------
 
