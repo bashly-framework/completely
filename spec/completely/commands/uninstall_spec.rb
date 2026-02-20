@@ -39,7 +39,7 @@ describe Commands::Uninstall do
 
       expect { subject.execute %w[uninstall completely-test --dry] }
         .to output_approval('cli/uninstall/dry')
-        .except(%r[/home/([^/]+)], '/home/USER')
+        .except(%r{/home/([^/]+)}, '/home/USER')
         .diff(20)
     end
   end
