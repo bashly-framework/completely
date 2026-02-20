@@ -60,6 +60,9 @@
 % patterns.each do |pattern|
 % next if pattern.empty?
     <%= pattern.case_string %>)
+% if pattern.filename_action?
+      compopt -o filenames 2>/dev/null
+% end
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen <%= pattern.compgen %> -- "$cur")
       ;;
 

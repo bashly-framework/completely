@@ -37,6 +37,20 @@ describe Pattern do
     end
   end
 
+  describe '#filename_action?' do
+    it 'returns true when file or directory actions exist' do
+      expect(subject.filename_action?).to be true
+    end
+
+    context 'when file and directory actions are not present' do
+      let(:completions) { %w[--message --help <user>] }
+
+      it 'returns false' do
+        expect(subject.filename_action?).to be false
+      end
+    end
+  end
+
   describe '#prefix' do
     it 'returns the first word of the pattern' do
       expect(subject.prefix).to eq 'git'

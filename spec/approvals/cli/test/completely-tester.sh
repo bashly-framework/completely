@@ -71,6 +71,7 @@ _mygit_completions() {
       ;;
 
     'init'*)
+      compopt -o filenames 2>/dev/null
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -A directory -W "$(_mygit_completions_filter "--bare")" -- "$cur")
       ;;
 

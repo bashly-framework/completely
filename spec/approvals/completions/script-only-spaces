@@ -51,6 +51,7 @@ _completely_completions() {
 
   case "$compline" in
     'generate'*)
+      compopt -o filenames 2>/dev/null
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -A directory -W "$(_completely_completions_filter "--help --force")" -- "$cur")
       ;;
 

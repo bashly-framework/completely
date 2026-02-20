@@ -49,6 +49,10 @@ module Completely
       @compgen ||= compgen!
     end
 
+    def filename_action?
+      actions.include?('-A file') || actions.include?('-A directory')
+    end
+
   private
 
     def compgen!
