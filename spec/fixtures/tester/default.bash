@@ -9,7 +9,6 @@ _cli_completions_filter() {
   local cur=${COMP_WORDS[COMP_CWORD]}
   local result=()
   local want_options=0
-  local dynamic_prefix="__completely_dynamic__"
 
   # words the user already typed (excluding the command itself)
   local used=()
@@ -21,29 +20,19 @@ _cli_completions_filter() {
   # Completing a non-option: drop options and already-used words.
   [[ "${cur:0:1}" == "-" ]] && want_options=1
   for word in "${words[@]}"; do
-    local candidates=("$word")
-    if [[ "$word" == "$dynamic_prefix"* ]]; then
-      word="${word#"$dynamic_prefix"}"
-      word="${word//$'\r'/ }"
-      word="${word//$'\n'/ }"
-      read -r -a candidates <<<"$word"
+    if ((!want_options)); then
+      [[ "${word:0:1}" == "-" ]] && continue
+
+      for u in "${used[@]}"; do
+        if [[ "$u" == "$word" ]]; then
+          continue 2
+        fi
+      done
     fi
 
-    for candidate in "${candidates[@]}"; do
-      if ((!want_options)); then
-        [[ "${candidate:0:1}" == "-" ]] && continue
-
-        for u in "${used[@]}"; do
-          if [[ "$u" == "$candidate" ]]; then
-            continue 2
-          fi
-        done
-      fi
-
-      # compgen -W expects shell-escaped words in one space-delimited string.
-      printf -v candidate '%q' "$candidate"
-      result+=("$candidate")
-    done
+    # compgen -W expects shell-escaped words in one space-delimited string.
+    printf -v word '%q' "$word"
+    result+=("$word")
   done
 
   echo "${result[*]}"
@@ -61,18 +50,22 @@ _cli_completions() {
 
   case "$compline" in
     'command childcommand'*)
+      # shellcheck disable=SC2046  # intentional splitting for dynamic $(...) completions
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--quiet" "--verbose" "-q" "-v")" -- "$cur")
       ;;
 
     'command subcommand'*)
+      # shellcheck disable=SC2046  # intentional splitting for dynamic $(...) completions
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--force" "--quiet")" -- "$cur")
       ;;
 
     'command'*)
+      # shellcheck disable=SC2046  # intentional splitting for dynamic $(...) completions
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "subcommand" "childcommand")" -- "$cur")
       ;;
 
     *)
+      # shellcheck disable=SC2046  # intentional splitting for dynamic $(...) completions
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_cli_completions_filter "--help" "--version" "command" "conquer")" -- "$cur")
       ;;
 

@@ -1,7 +1,5 @@
 module Completely
   class Pattern
-    DYNAMIC_WORD_PREFIX = '__completely_dynamic__'
-
     attr_reader :text, :completions, :function_name
 
     def initialize(text, completions, function_name)
@@ -65,9 +63,7 @@ module Completely
     end
 
     def serialize_word(word)
-      if dynamic_word?(word)
-        return %("#{DYNAMIC_WORD_PREFIX}#{escape_for_double_quotes word}")
-      end
+      return word if dynamic_word?(word)
 
       %("#{escape_for_double_quotes word}")
     end
