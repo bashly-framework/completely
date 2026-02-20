@@ -22,12 +22,12 @@ describe Commands::Generate do
       expect(File.read 'completely.bash').to match_approval('cli/generated-script')
     end
 
-    it 'generates a shellcheck compliant script', :script_quality do
+    it 'generates a shellcheck compliant script' do
       expect { subject.execute %w[generate] }.to output_approval('cli/generate/no-args')
       expect(`shellcheck completely.bash 2>&1`).to be_empty
     end
 
-    it 'generates a shfmt compliant script', :script_quality do
+    it 'generates a shfmt compliant script' do
       expect { subject.execute %w[generate] }.to output_approval('cli/generate/no-args')
       expect(`shfmt -d -i 2 -ci completely.bash 2>&1`).to be_empty
     end
@@ -119,16 +119,16 @@ describe Commands::Generate do
   context 'with --install PROGRAM' do
     let(:mock_installer) do
       instance_double Installer,
-        install:                true,
+        install: true,
         install_command_string: 'stubbed install_command_string',
-        target_path:            'stubbed target_path'
+        target_path: 'stubbed target_path'
     end
 
     it 'passes the generated script to the installer' do
       allow(Installer).to receive(:from_string)
         .with(
           program: 'mycli',
-          string:  a_string_matching(/bash completions script/)
+          string: a_string_matching(/bash completions script/)          
         ).and_return(mock_installer)
 
       expect(mock_installer).to receive(:install)

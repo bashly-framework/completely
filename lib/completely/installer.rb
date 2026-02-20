@@ -1,5 +1,3 @@
-require 'fileutils'
-
 module Completely
   class Installer
     class << self
@@ -40,8 +38,18 @@ module Completely
       @script_path = script_path
     end
 
+    def target_directories
+      @target_directories ||= %W[
+        /usr/share/bash-completion/completions
+        /usr/local/etc/bash_completion.d
+        #{Dir.home}/.local/share/bash-completion/completions
+        #{Dir.home}/.bash_completion.d
+      ]
+    end
+
     def install_command
-      %W[cp #{script_path} #{target_path}]
+      result = root_user? ? [] : %w[sudo]
+      result + %W[cp #{script_path} #{target_path}]
     end
 
     def install_command_string
@@ -49,7 +57,8 @@ module Completely
     end
 
     def uninstall_command
-      %W[rm -f #{target_path}]
+      result = root_user? ? [] : %w[sudo]
+      result + %w[rm -f] + target_directories.map { |dir| "#{dir}/#{program}" }
     end
 
     def uninstall_command_string
@@ -61,11 +70,13 @@ module Completely
     end
 
     def install(force: false)
+      unless completions_path
+        raise InstallError, 'Cannot determine system completions directory'
+      end
+
       unless script_exist?
         raise InstallError, "Cannot find script: m`#{script_path}`"
       end
-
-      FileUtils.mkdir_p completions_path
 
       if target_exist? && !force
         raise InstallError, "File exists: m`#{target_path}`"
@@ -88,20 +99,22 @@ module Completely
       File.exist? script_path
     end
 
+    def root_user?
+      Process.uid.zero?
+    end
+
     def completions_path
-      @completions_path ||= "#{user_completions_base_dir}/completions"
-    end
+      @completions_path ||= begin
+        result = nil
+        target_directories.each do |target|
+          if Dir.exist? target
+            result = target
+            break
+          end
+        end
 
-    def user_completions_base_dir
-      @user_completions_base_dir ||= bash_completion_user_dir || "#{data_home}/bash-completion"
-    end
-
-    def bash_completion_user_dir
-      ENV['BASH_COMPLETION_USER_DIR']&.split(':')&.find { |entry| !entry.empty? }
-    end
-
-    def data_home
-      ENV['XDG_DATA_HOME'] || "#{Dir.home}/.local/share"
+        result
+      end
     end
   end
 end

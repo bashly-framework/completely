@@ -1,1 +1,1 @@
-cp completely.bash /home/USER/.local/share/bash-completion/completions/completely-test
+sudo cp completely.bash /usr/share/bash-completion/completions/completely-test

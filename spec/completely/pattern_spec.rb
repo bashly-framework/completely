@@ -105,7 +105,7 @@ describe Pattern do
 
   describe '#compgen' do
     it 'returns a line of compgen arguments' do
-      expect(subject.compgen).to eq '-A file -A user -W "$(_filter "--message" "--help")"'
+      expect(subject.compgen).to eq '-A file -A user -W "$(_filter "--message --help")"'
     end
 
     context 'when there are no words for -W' do
@@ -120,15 +120,7 @@ describe Pattern do
       let(:completions) { %w[--message --help] }
 
       it 'omits the -A arguments' do
-        expect(subject.compgen).to eq '-W "$(_filter "--message" "--help")"'
-      end
-    end
-
-    context 'when words include spaces and quotes' do
-      let(:completions) { ['hello world', 'one"quote'] }
-
-      it 'shell-escapes words before passing them to the filter' do
-        expect(subject.compgen).to eq '-W "$(_filter "hello world" "one\"quote")"'
+        expect(subject.compgen).to eq '-W "$(_filter "--message --help")"'
       end
     end
 

@@ -60,7 +60,7 @@ module Completely
       end
 
       def show(content) = puts content
-
+      
       def save(content)
         File.write output_path, content
         say "Saved m`#{output_path}`"

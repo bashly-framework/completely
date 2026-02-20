@@ -1,7 +1,5 @@
 # Completely - Bash Completions Generator
 
-![repocard](https://repocard.dannyben.com/svg/completely.svg)
-
 Completely is a command line utility and a Ruby library that lets you generate
 bash completion scripts from simple YAML configuration.
 

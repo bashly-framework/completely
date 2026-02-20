@@ -2,28 +2,18 @@
 
 ## Running tests
 
-You can run specs with `rspec` as usual.
-
-We recommend using [`respec`][2], which wraps common spec workflows:
-
 ```bash
-rspec
+$ rspec
 # or
-respec
+$ run spec
+# or, to run just tests in a given file
+$ run spec zsh
+# or, to run just specs tagged with :focus
+$ run spec :focus
 ```
 
 You might need to prefix the commands with `bundle exec`, depending on the way
 Ruby is installed.
-
-Useful helper shortcuts:
-
-```bash
-# script quality checks (shellcheck + shfmt generated script tests)
-respec tagged script_quality
-
-# integration behavior suite
-respec only integration
-```
 
 ## Interactive Approvals
 
@@ -40,4 +30,3 @@ zsh container. This is all done automatically by `spec/completely/zsh_spec.rb`.
 
 
 [1]: https://github.com/dannyben/rspec_approvals
-[2]: https://github.com/DannyBen/respec

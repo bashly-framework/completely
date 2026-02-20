@@ -54,26 +54,8 @@ module Completely
     def compgen!
       result = []
       result << actions.join(' ').to_s if actions.any?
-      result << %[-W "$(#{function_name} #{serialized_words.join ' '})"] if words.any?
+      result << %[-W "$(#{function_name} "#{words.join ' '}")"] if words.any?
       result.any? ? result.join(' ') : nil
-    end
-
-    def serialized_words
-      @serialized_words ||= words.map { |word| serialize_word(word) }
-    end
-
-    def serialize_word(word)
-      return word if dynamic_word?(word)
-
-      %("#{escape_for_double_quotes word}")
-    end
-
-    def dynamic_word?(word)
-      word.match?(/\A\$\(.+\)\z/)
-    end
-
-    def escape_for_double_quotes(word)
-      word.gsub(/["\\]/, '\\\\\&')
     end
   end
 end
