@@ -49,21 +49,17 @@ module Completely
       @compgen ||= compgen!
     end
 
+    def filename_action?
+      actions.include?('-A file') || actions.include?('-A directory')
+    end
+
   private
 
     def compgen!
       result = []
       result << actions.join(' ').to_s if actions.any?
-      result << %[-W "$(#{function_name} #{quoted_words.join ' '})"] if words.any?
+      result << %[-W "$(#{function_name} "#{words.join ' '}")"] if words.any?
       result.any? ? result.join(' ') : nil
-    end
-
-    def quoted_words
-      @quoted_words ||= words.map { |word| %("#{escape_for_double_quotes word}") }
-    end
-
-    def escape_for_double_quotes(word)
-      word.gsub(/["\\]/, '\\\\\&')
     end
   end
 end

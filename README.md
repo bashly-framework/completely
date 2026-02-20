@@ -169,6 +169,13 @@ mygit:
 The `2> /dev/null` is used so that if the command is executed in a directory
 without a git repository, it will still behave as expected.
 
+### Completion scope and limitations
+
+- Completion words are treated as whitespace-delimited tokens.
+- Literal completion phrases that contain spaces are not supported as a single completion item.
+- Quotes and other special shell characters in literal completion words are not escaped automatically.
+- Dynamic `$(...)` completion commands should output plain whitespace-delimited words.
+
 ### Suggesting flag arguments
 
 Adding a `*` wildcard in the middle of a pattern can be useful for suggesting

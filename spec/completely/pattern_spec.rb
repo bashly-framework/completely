@@ -37,6 +37,20 @@ describe Pattern do
     end
   end
 
+  describe '#filename_action?' do
+    it 'returns true when file or directory actions exist' do
+      expect(subject.filename_action?).to be true
+    end
+
+    context 'when file and directory actions are not present' do
+      let(:completions) { %w[--message --help <user>] }
+
+      it 'returns false' do
+        expect(subject.filename_action?).to be false
+      end
+    end
+  end
+
   describe '#prefix' do
     it 'returns the first word of the pattern' do
       expect(subject.prefix).to eq 'git'
@@ -105,7 +119,7 @@ describe Pattern do
 
   describe '#compgen' do
     it 'returns a line of compgen arguments' do
-      expect(subject.compgen).to eq '-A file -A user -W "$(_filter "--message" "--help")"'
+      expect(subject.compgen).to eq '-A file -A user -W "$(_filter "--message --help")"'
     end
 
     context 'when there are no words for -W' do
@@ -120,15 +134,7 @@ describe Pattern do
       let(:completions) { %w[--message --help] }
 
       it 'omits the -A arguments' do
-        expect(subject.compgen).to eq '-W "$(_filter "--message" "--help")"'
-      end
-    end
-
-    context 'when words include spaces and quotes' do
-      let(:completions) { ['hello world', 'one"quote'] }
-
-      it 'shell-escapes words before passing them to the filter' do
-        expect(subject.compgen).to eq '-W "$(_filter "hello world" "one\"quote")"'
+        expect(subject.compgen).to eq '-W "$(_filter "--message --help")"'
       end
     end
 

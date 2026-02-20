@@ -1,3 +1,3 @@
 module Completely
-  VERSION = '0.7.4'
+  VERSION = '0.7.3'
 end
