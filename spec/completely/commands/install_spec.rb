@@ -52,6 +52,7 @@ describe Commands::Install do
 
       expect { subject.execute %w[install completely-test --dry] }
         .to output_approval('cli/install/dry')
+        .except(%r[/home/([^/]+)], '/home/USER')
     end
   end
 
@@ -64,6 +65,7 @@ describe Commands::Install do
       expect { subject.execute %w[install completely-test - --dry] }
         .to output_approval('cli/install/stdin-dry')
         .except(/cp [^\s]*completely-[^\s]*/, 'cp <tmpfile-path>')
+        .except(%r[/home/([^/]+)], '/home/USER')
     end
   end
 

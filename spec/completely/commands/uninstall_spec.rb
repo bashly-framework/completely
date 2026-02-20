@@ -38,7 +38,9 @@ describe Commands::Uninstall do
       expect(mock_installer).not_to receive(:uninstall)
 
       expect { subject.execute %w[uninstall completely-test --dry] }
-        .to output_approval('cli/uninstall/dry').diff(20)
+        .to output_approval('cli/uninstall/dry')
+        .except(%r[/home/([^/]+)], '/home/USER')
+        .diff(20)
     end
   end
 
