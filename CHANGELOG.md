@@ -1,6 +1,13 @@
 Changelog
 ========================================
 
+v0.7.6 - 2026-06-29
+----------------------------------------
+
+- Fix missing `erb` dependency [`1340011`](https://github.com/bashly-framework/completely/commit/1340011)
+- Compare [`v0.7.5..v0.7.6`](https://github.com/bashly-framework/completely/compare/v0.7.5..v0.7.6)
+
+
 v0.7.5 - 2026-02-20
 ----------------------------------------
 
