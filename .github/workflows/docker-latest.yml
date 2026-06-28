@@ -12,9 +12,13 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
+permissions:
+  contents: read
+
 jobs:
   docker:
     runs-on: ubuntu-latest
+    environment: dockerhub
 
     steps:
       - name: Checkout
