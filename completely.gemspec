@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 3.2'
 
   s.add_dependency 'colsole', '~> 1.0.0'
+  s.add_dependency 'erb'
   s.add_dependency 'mister_bin', '~> 0.7'
 
   s.metadata = {
