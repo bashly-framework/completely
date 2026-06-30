@@ -317,9 +317,26 @@ require 'completely'
 # Load from file
 completions = Completely::Completions.load "input.yaml"
 
-# Or, from a hash
+# Or, from a pattern config hash
 input = {
-  "mygit" => %w[--help --version status init commit],
+  "patterns" => [
+    "mygit init [init options] <directory>",
+    "mygit status|st [status options]"
+  ],
+  "options" => {
+    "init" => ["--bare"],
+    "status" => ["--verbose|-v", "--branch|-b <branch>"]
+  },
+  "tokens" => {
+    "directory" => "directory",
+    "branch" => "$(git branch --format='%(refname:short)' 2>/dev/null)"
+  }
+}
+completions = Completely::Completions.new input
+
+# Flat and nested config hashes are also supported by the same API.
+input = {
+  "mygit" => %w[--help --version status init],
   "mygit status" => %w[--help --verbose --branch]
 }
 completions = Completely::Completions.new input
