@@ -16,7 +16,7 @@ module Completely
     end
 
     def flat_config
-      raise Error, 'Pattern config completion generation is not implemented yet'
+      raise Error, 'Pattern config cannot be converted to flat config'
     end
 
   private

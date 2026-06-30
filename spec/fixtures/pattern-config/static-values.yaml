@@ -1,0 +1,8 @@
+patterns:
+  - mygit deploy <environment>
+
+tokens:
+  environment:
+    - dev
+    - staging
+    - production

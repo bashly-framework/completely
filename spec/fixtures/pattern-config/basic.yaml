@@ -11,4 +11,4 @@ options:
 
 tokens:
   directory: directory
-  branch: $(git branch --format='%(refname:short)' 2>/dev/null)
+  branch: $(echo main dev)

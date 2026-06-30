@@ -45,7 +45,7 @@ describe PatternConfig do
               name: 'branch',
               source: {
                 type: :command,
-                value: "$(git branch --format='%(refname:short)' 2>/dev/null)",
+                value: '$(echo main dev)',
               },
             },
           },
@@ -58,9 +58,16 @@ describe PatternConfig do
         'directory' => { type: :builtin, value: 'directory' },
         'branch' => {
           type: :command,
-          value: "$(git branch --format='%(refname:short)' 2>/dev/null)",
+          value: '$(echo main dev)',
         }
       )
+    end
+  end
+
+  describe '#flat_config' do
+    it 'does not convert pattern config to flat config' do
+      expect { config.flat_config }
+        .to raise_error Completely::Error, 'Pattern config cannot be converted to flat config'
     end
   end
 end

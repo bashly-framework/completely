@@ -1,0 +1,35 @@
+basic:
+- compline: "mygit "
+  expected: [init, st, status]
+
+- compline: "mygit stat"
+  expected: [status]
+
+- compline: "mygit status -"
+  expected: [--branch, --verbose, -b, -v]
+
+- compline: "mygit init "
+  expected: [--bare, another-dir, dir with spaces, dummy-dir]
+
+- compline: "mygit st -"
+  expected: [--branch, --verbose, -b, -v]
+
+- compline: "mygit status --branch "
+  expected: [dev, main]
+
+- compline: "mygit status -b m"
+  expected: [main]
+
+- compline: "mygit init d"
+  expected: [dir with spaces, dummy-dir]
+
+- compline: "mygit init dummy-dir -"
+  expected: [--bare]
+
+static-values:
+- compline: "mygit deploy st"
+  expected: [staging]
+
+implicit-builtin:
+- compline: "mygit init d"
+  expected: [dir with spaces, dummy-dir]

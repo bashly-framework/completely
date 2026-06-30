@@ -25,6 +25,22 @@ describe Completions do
         expect(subject).not_to be_valid
       end
     end
+
+    context 'with pattern config' do
+      let(:path) { 'spec/fixtures/pattern-config/basic.yaml' }
+
+      it 'returns true when all patterns use the same program' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'with pattern config using different programs' do
+      let(:path) { 'spec/fixtures/pattern-config/invalid-programs.yaml' }
+
+      it 'returns false' do
+        expect(subject).not_to be_valid
+      end
+    end
   end
 
   describe '#patterns' do
