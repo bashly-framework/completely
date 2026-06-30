@@ -77,16 +77,15 @@
 % end
   esac
 
-  case "$route_id" in
-% pattern_routes.each do |route|
-    <%= pattern_route_id route %>)
-      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "<%= bash_double_quote_escape pattern_route_option_words(route).join(' ') %>" -- "$cur")
-      ;;
-% end
-  esac
-
   if [[ "${cur:0:1}" == "-" ]]; then
-    return
+    case "$route_id" in
+% pattern_routes.each do |route|
+      <%= pattern_route_id route %>)
+        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "<%= bash_double_quote_escape pattern_route_option_words(route).join(' ') %>" -- "$cur")
+        return
+        ;;
+% end
+    esac
   fi
 
   case "$route_id:$positional_index" in

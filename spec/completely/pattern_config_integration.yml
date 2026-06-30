@@ -9,7 +9,7 @@ basic:
   expected: [--branch, --verbose, -b, -v]
 
 - compline: "mygit init "
-  expected: [--bare, another-dir, dir with spaces, dummy-dir]
+  expected: [another-dir, dir with spaces, dummy-dir]
 
 - compline: "mygit st -"
   expected: [--branch, --verbose, -b, -v]
@@ -39,16 +39,16 @@ interleaved:
   expected: [clone]
 
 - compline: "cli clone "
-  expected: [--protocol, --verbose, -p, -v, source1, source2]
+  expected: [source1, source2]
 
 - compline: "cli clone -v "
-  expected: [--protocol, --verbose, -p, -v, source1, source2]
+  expected: [source1, source2]
 
 - compline: "cli clone -v source1 "
-  expected: [--protocol, --verbose, -p, -v, dest1, dest2]
+  expected: [dest1, dest2]
 
 - compline: "cli clone -v source1 -p "
   expected: [https, ssh]
 
 - compline: "cli clone -v source1 -p ssh "
-  expected: [--protocol, --verbose, -p, -v, dest1, dest2]
+  expected: [dest1, dest2]
