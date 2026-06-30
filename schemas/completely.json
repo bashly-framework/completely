@@ -1,6 +1,101 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Completely configuration",
+  "description": "Configuration for generating bash completions with Completely.",
+  "oneOf": [
+    { "$ref": "#/definitions/patternConfig" },
+    { "$ref": "#/definitions/flatOrNestedConfig" }
+  ],
   "definitions": {
+    "completelyOptions": {
+      "type": "object",
+      "properties": {
+        "complete_options": {
+          "type": "string",
+          "examples": ["-o nosort"]
+        }
+      },
+      "required": ["complete_options"],
+      "additionalProperties": false
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pattern": {
+      "allOf": [
+        { "$ref": "#/definitions/nonEmptyString" }
+      ],
+      "examples": [
+        "mygit [root options]",
+        "mygit init [init options] <directory>",
+        "mygit status|st [status options]"
+      ]
+    },
+    "option": {
+      "allOf": [
+        { "$ref": "#/definitions/nonEmptyString" }
+      ],
+      "examples": [
+        "--help",
+        "--version",
+        "-h|--help",
+        "--branch|-b <branch>"
+      ]
+    },
+    "tokenSource": {
+      "oneOf": [
+        {
+          "allOf": [
+            { "$ref": "#/definitions/nonEmptyString" }
+          ],
+          "examples": [
+            "directory",
+            "file",
+            "$(git branch --format='%(refname:short)' 2>/dev/null)"
+          ]
+        },
+        {
+          "type": "array",
+          "items": { "$ref": "#/definitions/tokenValue" },
+          "examples": [
+            ["short", "long"],
+            [0, 10, 100]
+          ]
+        }
+      ]
+    },
+    "tokenValue": {
+      "oneOf": [
+        { "$ref": "#/definitions/nonEmptyString" },
+        { "type": "number" },
+        { "type": "boolean" }
+      ]
+    },
+    "patternConfig": {
+      "type": "object",
+      "required": ["patterns"],
+      "properties": {
+        "completely_options": { "$ref": "#/definitions/completelyOptions" },
+        "patterns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/pattern" }
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/option" }
+          }
+        },
+        "tokens": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/tokenSource" }
+        }
+      },
+      "additionalProperties": false
+    },
     "word": {
       "type": "string",
       "minLength": 1,
@@ -38,34 +133,25 @@
         { "$ref": "#/definitions/word" },
         {
           "type": "object",
-          "additionalProperties": {
-            "type": "array",
-            "items": { "$ref": "#/definitions/wordOrMapping" }
-          }
+          "additionalProperties": { "$ref": "#/definitions/entryArray" }
         }
       ]
     },
     "entryArray": {
       "type": "array",
       "items": { "$ref": "#/definitions/wordOrMapping" }
-    }
-  },
-  "type": "object",
-  "properties": {
-    "completely_options": {
+    },
+    "flatOrNestedConfig": {
       "type": "object",
       "properties": {
-        "complete_options": {
-          "type": "string",
-          "examples": ["-o nosort"]
+        "completely_options": { "$ref": "#/definitions/completelyOptions" }
+      },
+      "patternProperties": {
+        "^(?!(completely_options|patterns|options|tokens)$).*": {
+          "$ref": "#/definitions/entryArray"
         }
       },
-      "required": ["complete_options"],
       "additionalProperties": false
     }
-  },
-  "patternProperties": {
-    "^(?!completely_options$).*": { "$ref": "#/definitions/entryArray" }
-  },
-  "additionalProperties": false
+  }
 }
