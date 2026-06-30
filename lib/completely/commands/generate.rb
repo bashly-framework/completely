@@ -16,7 +16,7 @@ module Completely
       option '-i --install PROGRAM', 'Install the generated script as completions for PROGRAM.'
 
       param 'CONFIG_PATH', <<~USAGE
-        Path to the YAML configuration file [default: completely.yaml].
+        Path to the Completely YAML configuration file (pattern, flat, or nested) [default: completely.yaml].
         Use '-' to read from stdin.
 
         Can also be set by an environment variable.

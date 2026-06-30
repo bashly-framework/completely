@@ -1,4 +1,4 @@
-Create a new sample YAML configuration file
+Create a new sample Completely YAML configuration file
 
 Usage:
   completely init [--format FORMAT] [CONFIG_PATH]
@@ -6,16 +6,17 @@ Usage:
 
 Options:
   -f --format FORMAT
-    Configuration format: pattern, flat, or nested [default: pattern]
+    Sample format: pattern, flat, or nested [default: pattern]
 
   -h --help
     Show this help
 
 Parameters:
   CONFIG_PATH
-    Path to the YAML configuration file [default: completely.yaml].
+    Path to the Completely YAML configuration file (pattern, flat, or nested)
+    [default: completely.yaml].
     Can also be set by an environment variable.
 
 Environment Variables:
   COMPLETELY_CONFIG_PATH
-    Path to a completely configuration file [default: completely.yaml].
+    Path to a Completely YAML configuration file [default: completely.yaml].

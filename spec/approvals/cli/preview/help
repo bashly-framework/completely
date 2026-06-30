@@ -13,12 +13,13 @@ Options:
 
 Parameters:
   CONFIG_PATH
-    Path to the YAML configuration file [default: completely.yaml].
+    Path to the Completely YAML configuration file (pattern, flat, or nested)
+    [default: completely.yaml].
     Can also be set by an environment variable.
 
 Environment Variables:
   COMPLETELY_CONFIG_PATH
-    Path to a completely configuration file [default: completely.yaml].
+    Path to a Completely YAML configuration file [default: completely.yaml].
 
   COMPLETELY_DEBUG
     If not empty, the generated script will include an additional debugging

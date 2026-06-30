@@ -6,7 +6,10 @@ describe Commands::Test do
     ENV['COMPLETELY_CONFIG_PATH'] = nil
   end
 
-  after { system 'rm -f completely.yaml' }
+  after do
+    system 'rm -f completely.yaml'
+    ENV['COMPLETELY_CONFIG_PATH'] = nil
+  end
 
   context 'with --help' do
     it 'shows long usage' do

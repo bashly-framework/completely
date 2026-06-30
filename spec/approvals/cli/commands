@@ -1,7 +1,7 @@
 Completely - Bash Completions Generator
 
 Commands:
-  init       Create a new sample YAML configuration file
+  init       Create a new sample Completely YAML configuration file
   preview    Generate the bash completion script to stdout
   generate   Generate the bash completion script to file or stdout
   test       Test completions

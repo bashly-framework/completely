@@ -3,12 +3,12 @@ require 'completely/commands/base'
 module Completely
   module Commands
     class Init < Base
-      help 'Create a new sample YAML configuration file'
+      help 'Create a new sample Completely YAML configuration file'
 
       usage 'completely init [--format FORMAT] [CONFIG_PATH]'
       usage 'completely init (-h|--help)'
 
-      option '-f --format FORMAT', 'Configuration format: pattern, flat, or nested [default: pattern]'
+      option '-f --format FORMAT', 'Sample format: pattern, flat, or nested [default: pattern]'
 
       param_config_path
       environment_config_path
