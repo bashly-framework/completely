@@ -1,0 +1,14 @@
+patterns:
+  - mygit init [init options] <directory>
+  - mygit status|st [status options]
+
+options:
+  init:
+    - --bare
+  status:
+    - --verbose|-v
+    - --branch|-b <branch>
+
+tokens:
+  directory: directory
+  branch: $(git branch --format='%(refname:short)' 2>/dev/null)

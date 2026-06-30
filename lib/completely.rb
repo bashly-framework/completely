@@ -1,4 +1,6 @@
 require 'completely/exceptions'
+require 'completely/flat_config'
+require 'completely/pattern_config'
 require 'completely/config'
 require 'completely/pattern'
 require 'completely/completions'

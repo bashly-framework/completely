@@ -42,7 +42,7 @@ describe Commands::Preview do
 
   context 'with an invalid configuration' do
     it 'outputs a warning to STDERR' do
-      expect { subject.execute %w[preview spec/fixtures/broken.yaml] }
+      expect { subject.execute %w[preview spec/fixtures/flat-config/broken.yaml] }
         .to output_approval('cli/warning').to_stderr
     end
   end

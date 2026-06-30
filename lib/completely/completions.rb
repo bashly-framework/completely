@@ -16,7 +16,7 @@ module Completely
     end
 
     def initialize(config, function_name: nil)
-      @config = config.is_a?(Config) ? config : Config.new(config)
+      @config = config.respond_to?(:flat_config) ? config : Config.build(config)
       @function_name = function_name
     end
 

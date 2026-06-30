@@ -1,7 +1,7 @@
 describe Completions do
   subject { described_class.load path }
 
-  let(:path) { "spec/fixtures/#{file}.yaml" }
+  let(:path) { "spec/fixtures/flat-config/#{file}.yaml" }
   let(:file) { 'basic' }
 
   describe '::read' do

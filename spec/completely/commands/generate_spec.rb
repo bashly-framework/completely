@@ -148,7 +148,7 @@ describe Commands::Generate do
 
   context 'with an invalid configuration' do
     it 'outputs a warning to STDERR' do
-      expect { subject.execute %w[generate spec/fixtures/broken.yaml spec/tmp/out.bash] }
+      expect { subject.execute %w[generate spec/fixtures/flat-config/broken.yaml spec/tmp/out.bash] }
         .to output_approval('cli/warning').to_stderr
     end
   end

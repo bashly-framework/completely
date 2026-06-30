@@ -1,7 +1,7 @@
 describe Config do
   subject { described_class.load path }
 
-  let(:path) { "spec/fixtures/#{file}.yaml" }
+  let(:path) { "spec/fixtures/flat-config/#{file}.yaml" }
   let(:file) { 'nested' }
   let(:config_string) { 'cli: [--help, --version]' }
   let(:config_hash) { { 'cli' => %w[--help --version] } }
@@ -9,6 +9,19 @@ describe Config do
   describe '::parse' do
     it 'loads config from string' do
       expect(described_class.parse(config_string).config).to eq config_hash
+    end
+
+    it 'returns a flat config for the existing configuration format' do
+      expect(described_class.parse(config_string)).to be_a FlatConfig
+    end
+
+    it 'returns a pattern config for the pattern configuration format' do
+      config = described_class.parse <<~YAML
+        patterns:
+          - cli [options]
+      YAML
+
+      expect(config).to be_a PatternConfig
     end
 
     context 'when the string is not a valid YAML' do
