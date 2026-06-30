@@ -30,6 +30,21 @@ static-values:
 - compline: "mygit deploy st"
   expected: [staging]
 
-implicit-builtin:
-- compline: "mygit init d"
-  expected: [dir with spaces, dummy-dir]
+interleaved:
+- compline: "cli "
+  expected: [clone]
+
+- compline: "cli clone "
+  expected: [--protocol, --verbose, -p, -v, source1, source2]
+
+- compline: "cli clone -v "
+  expected: [--protocol, --verbose, -p, -v, source1, source2]
+
+- compline: "cli clone -v source1 "
+  expected: [--protocol, --verbose, -p, -v, dest1, dest2]
+
+- compline: "cli clone -v source1 -p "
+  expected: [https, ssh]
+
+- compline: "cli clone -v source1 -p ssh "
+  expected: [--protocol, --verbose, -p, -v, dest1, dest2]

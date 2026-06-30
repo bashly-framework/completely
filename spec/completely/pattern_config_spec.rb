@@ -70,4 +70,20 @@ describe PatternConfig do
         .to raise_error Completely::Error, 'Pattern config cannot be converted to flat config'
     end
   end
+
+  context 'with a missing option group' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/missing-option.yaml' }
+
+    it 'raises ParseError' do
+      expect { config.model }.to raise_error Completely::ParseError, 'Unknown option group: missing'
+    end
+  end
+
+  context 'with a missing token' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/missing-token.yaml' }
+
+    it 'raises ParseError' do
+      expect { config.model }.to raise_error Completely::ParseError, 'Unknown token: directory'
+    end
+  end
 end

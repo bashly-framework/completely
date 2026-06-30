@@ -1,0 +1,12 @@
+patterns:
+  - cli clone [download] <source> <dest>
+
+options:
+  download:
+    - -p|--protocol <protocol>
+    - -v|--verbose
+
+tokens:
+  source: [source1, source2]
+  dest: [dest1, dest2]
+  protocol: [ssh, https]

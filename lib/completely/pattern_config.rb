@@ -7,6 +7,8 @@ module Completely
     end
 
     def model
+      validate!
+
       @model ||= {
         program: program,
         routes: routes,
@@ -53,6 +55,39 @@ module Completely
       end
     end
 
+    def validate!
+      missing_options = referenced_options - option_groups.keys
+      missing_tokens = referenced_tokens - token_sources.keys
+
+      errors = []
+      errors << "Unknown option group: #{missing_options.join ', '}" if missing_options.any?
+      errors << "Unknown token: #{missing_tokens.join ', '}" if missing_tokens.any?
+      raise ParseError, errors.join("\n") if errors.any?
+    end
+
+    def referenced_options
+      patterns.flat_map do |pattern|
+        pattern_parts(pattern).filter_map { |part| option_group_name(part) if option_group?(part) }
+      end.uniq
+    end
+
+    def referenced_tokens
+      pattern_tokens + option_tokens
+    end
+
+    def pattern_tokens
+      patterns.flat_map do |pattern|
+        pattern_parts(pattern).filter_map { |part| token_name(part) if token?(part) }
+      end
+    end
+
+    def option_tokens
+      option_groups.values.flatten.filter_map do |entry|
+        _flag_part, value_part = entry.split
+        token_name(value_part) if value_part
+      end
+    end
+
     def parse_pattern(pattern)
       result = { words: [], option_groups: [], positionals: [] }
 
@@ -88,7 +123,7 @@ module Completely
     end
 
     def parse_token(part)
-      name = part[/\A<(.+)>\z/, 1]
+      name = token_name part
       { name: name, source: parse_source(name, token_sources[name]) }
     end
 
@@ -100,8 +135,6 @@ module Completely
         { type: :command, value: source }
       when String
         { type: :builtin, value: source }
-      else
-        { type: :builtin, value: name }
       end
     end
 
@@ -115,6 +148,10 @@ module Completely
 
     def token?(part)
       part.start_with?('<') && part.end_with?('>')
+    end
+
+    def token_name(part)
+      part[/\A<(.+)>\z/, 1]
     end
   end
 end
