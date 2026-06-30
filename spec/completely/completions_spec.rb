@@ -55,6 +55,14 @@ describe Completions do
       expect(subject.script).to match_approval 'completions/script'
     end
 
+    context 'with a pattern configuration file' do
+      let(:path) { 'spec/fixtures/pattern-config/basic.yaml' }
+
+      it 'returns a bash completions script' do
+        expect(subject.script).to match_approval 'completions/script-pattern'
+      end
+    end
+
     context 'with a configuration file that only includes patterns with spaces' do
       let(:file) { 'only-spaces' }
 
