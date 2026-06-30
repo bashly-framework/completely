@@ -117,6 +117,31 @@ describe PatternConfig do
     end
   end
 
+  context 'with repeatable positionals' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/repeatable-positionals.yaml' }
+
+    it 'marks repeatable positionals' do
+      expect(config.model[:routes].first[:positionals]).to eq [
+        {
+          name:       'file',
+          repeatable: true,
+          source:     { type: :values, value: %w[file1 file2] },
+        },
+      ]
+    end
+  end
+
+  context 'with a non-final repeatable positional' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/repeatable-positionals-invalid.yaml' }
+
+    it 'raises ParseError' do
+      expect { config.model }.to raise_error(
+        Completely::ParseError,
+        'Repeatable positional must be the last positional in pattern: cli copy <source>... <target>'
+      )
+    end
+  end
+
   context 'with unknown option metadata' do
     subject(:config) { Config.load 'spec/fixtures/pattern-config/unknown-metadata.yaml' }
 

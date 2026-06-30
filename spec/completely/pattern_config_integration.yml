@@ -81,3 +81,25 @@ interleaved:
 
 - compline: "cli clone -v source1 -p ssh "
   expected: [dest1, dest2]
+
+repeatable-positionals:
+- compline: "cli "
+  expected: [copy, upload]
+
+- compline: "cli upload "
+  expected: [file1, file2]
+
+- compline: "cli upload file1 "
+  expected: [file1, file2]
+
+- compline: "cli upload file1 file2 "
+  expected: [file1, file2]
+
+- compline: "cli copy "
+  expected: [source1, source2]
+
+- compline: "cli copy source1 "
+  expected: [target1, target2]
+
+- compline: "cli copy source1 target1 "
+  expected: [target1, target2]

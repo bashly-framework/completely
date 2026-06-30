@@ -63,7 +63,17 @@ module Completely
       errors = []
       errors << "Unknown option group: #{missing_options.join ', '}" if missing_options.any?
       errors << "Unknown token: #{missing_tokens.join ', '}" if missing_tokens.any?
+      errors.concat repeatable_positional_errors
       raise ParseError, errors.join("\n") if errors.any?
+    end
+
+    def repeatable_positional_errors
+      patterns.filter_map do |pattern|
+        positionals = pattern_parts(pattern).select { |part| token? part }
+        next unless positionals[0...-1].any? { |part| repeatable_token? part }
+
+        "Repeatable positional must be the last positional in pattern: #{pattern}"
+      end
     end
 
     def referenced_options
@@ -111,7 +121,7 @@ module Completely
     end
 
     def pattern_parts(pattern)
-      pattern.scan(/\[[^\]]+\]|<[^>]+>|\S+/)
+      pattern.scan(/\[[^\]]+\]|<[^>]+>\.\.\.|<[^>]+>|\S+/)
     end
 
     def parse_option(entry)
@@ -147,8 +157,12 @@ module Completely
     end
 
     def parse_token(part)
-      name = token_name part
-      { name: name, source: parse_source(name, token_sources[name]) }
+      repeatable = repeatable_token? part
+      token_part = repeatable ? part.delete_suffix('...') : part
+      name = token_name token_part
+      result = { name: name, source: parse_source(name, token_sources[name]) }
+      result[:repeatable] = true if repeatable
+      result
     end
 
     def parse_source(_name, source)
@@ -171,11 +185,15 @@ module Completely
     end
 
     def token?(part)
-      part.start_with?('<') && part.end_with?('>')
+      part.match?(/\A<[^>]+>(?:\.\.\.)?\z/)
+    end
+
+    def repeatable_token?(part)
+      part.end_with? '...'
     end
 
     def token_name(part)
-      part[/\A<(.+)>\z/, 1]
+      part.delete_suffix('...')[/\A<(.+)>\z/, 1]
     end
   end
 end

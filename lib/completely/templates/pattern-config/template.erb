@@ -106,9 +106,20 @@
     esac
   fi
 
+% pattern_routes.each do |route|
+% route[:positionals].each_with_index do |positional, index|
+% next unless positional[:repeatable]
+  if [[ "$route_id" == "<%= pattern_route_id route %>" ]] && (( positional_index >= <%= index %> )); then
+    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen <%= pattern_source_compgen positional[:source] %> -- "$cur")
+    return
+  fi
+
+% end
+% end
   case "$route_id:$positional_index" in
 % pattern_routes.each do |route|
 % route[:positionals].each_with_index do |positional, index|
+% next if positional[:repeatable]
     <%= pattern_route_id route %>:<%= index %>)
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen <%= pattern_source_compgen positional[:source] %> -- "$cur")
       return

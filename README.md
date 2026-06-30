@@ -113,6 +113,7 @@ The `patterns` section describes valid command shapes:
 - Command aliases can be written with `|`, for example `status|st`.
 - `[name options]` references `options.name`. `[name]` is also accepted.
 - `<token>` references `tokens.token`.
+- `<token>...` marks the final positional as repeatable.
 
 The `options` section defines option groups:
 
@@ -135,6 +136,15 @@ options:
   status:
     - --tag <tag> (repeatable)
 ```
+
+The final positional in a pattern can be repeatable:
+
+```yaml
+patterns:
+  - mygit upload <file>...
+```
+
+Only the final positional may be repeatable.
 
 The `tokens` section defines completion sources. Each token value can be one of
 these forms:

@@ -29,6 +29,7 @@
       "examples": [
         "mygit [root options]",
         "mygit init [init options] <directory>",
+        "mygit upload <file>...",
         "mygit status|st [status options]"
       ]
     },
