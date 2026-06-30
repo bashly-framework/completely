@@ -30,6 +30,10 @@ static-values:
 - compline: "mygit deploy st"
   expected: [staging]
 
+spaced-token:
+- compline: "mygit status --format l"
+  expected: [long]
+
 interleaved:
 - compline: "cli "
   expected: [clone]

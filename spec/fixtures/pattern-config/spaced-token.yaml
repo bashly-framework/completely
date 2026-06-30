@@ -1,0 +1,9 @@
+patterns:
+  - mygit status [status options]
+
+options:
+  status:
+    - --format <status format>
+
+tokens:
+  status format: [short, long]

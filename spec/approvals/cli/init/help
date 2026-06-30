@@ -1,12 +1,12 @@
 Create a new sample YAML configuration file
 
 Usage:
-  completely init [--nested] [CONFIG_PATH]
+  completely init [--format FORMAT] [CONFIG_PATH]
   completely init (-h|--help)
 
 Options:
-  -n --nested
-    Generate a nested configuration
+  -f --format FORMAT
+    Configuration format: pattern, flat, or nested [default: pattern]
 
   -h --help
     Show this help

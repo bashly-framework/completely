@@ -83,7 +83,7 @@ module Completely
 
     def option_tokens
       option_groups.values.flatten.filter_map do |entry|
-        _flag_part, value_part = entry.split
+        _flag_part, value_part = option_parts entry
         token_name(value_part) if value_part
       end
     end
@@ -114,12 +114,16 @@ module Completely
     end
 
     def parse_option(entry)
-      flag_part, value_part = entry.split
+      flag_part, value_part = option_parts entry
       names = flag_part.split('|')
 
       result = { names: names }
       result[:value] = parse_token(value_part) if value_part
       result
+    end
+
+    def option_parts(entry)
+      entry.scan(/<[^>]+>|\S+/)
     end
 
     def parse_token(part)
