@@ -31,17 +31,21 @@ describe PatternConfig do
     end
 
     it 'returns init options' do
-      expect(config.model[:options]['init']).to eq [{ names: ['--bare'] }]
+      expect(config.model[:options]['init']).to eq [{ names: ['--bare'], repeatable: false }]
     end
 
     it 'returns status flag options' do
-      expect(config.model[:options]['status'].first).to eq({ names: ['--verbose', '-v'] })
+      expect(config.model[:options]['status'].first).to eq(
+        names:      ['--verbose', '-v'],
+        repeatable: false
+      )
     end
 
     it 'returns status options with values' do
       expect(config.model[:options]['status'].last).to eq(
-        names: ['--branch', '-b'],
-        value: {
+        names:      ['--branch', '-b'],
+        repeatable: false,
+        value:      {
           name:   'branch',
           source: { type: :command, value: '$(echo main dev)' },
         }
@@ -95,6 +99,29 @@ describe PatternConfig do
 
     it 'raises ParseError' do
       expect { config.model }.to raise_error Completely::ParseError, 'Unknown token: directory'
+    end
+  end
+
+  context 'with a repeatable option' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/repeatable.yaml' }
+
+    it 'marks repeatable options' do
+      expect(config.model[:options]['download'].last).to eq(
+        names:      ['-u', '--user'],
+        repeatable: true,
+        value:      {
+          name:   'name',
+          source: { type: :values, value: %w[alice bob] },
+        }
+      )
+    end
+  end
+
+  context 'with unknown option metadata' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/unknown-metadata.yaml' }
+
+    it 'raises ParseError' do
+      expect { config.model }.to raise_error Completely::ParseError, 'Unknown option metadata: (hidden)'
     end
   end
 end

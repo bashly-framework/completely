@@ -99,7 +99,7 @@ options:
     - --help
     - --branch|-b <branch>
     - --format <format>
-    - --verbose
+    - --verbose (repeatable)
 
 tokens:
   directory: directory
@@ -121,11 +121,20 @@ options:
   status:
     - --help
     - --branch|-b <branch>
-    - --verbose
+    - --verbose (repeatable)
 ```
 
 An option can be a plain flag, aliases separated with `|`, or a flag that
 expects a value token.
+
+Options are unique by default. If an option should be suggested again after it
+was already used, add `(repeatable)`:
+
+```yaml
+options:
+  status:
+    - --tag <tag> (repeatable)
+```
 
 The `tokens` section defines completion sources. Each token value can be one of
 these forms:

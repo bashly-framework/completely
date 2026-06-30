@@ -38,6 +38,31 @@ complete_options:
 - compline: "cli set "
   expected: ['0', '10', '100', '20', '30', '40', '50', '60', '70', '80', '90']
 
+repeatable:
+- compline: "cli download -"
+  expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]
+
+- compline: "cli download --version -"
+  expected: [--help, --protocol, --user, --verbose, -h, -p, -u, -v]
+
+- compline: "cli download -h -"
+  expected: [--protocol, --user, --verbose, --version, -p, -u, -v]
+
+- compline: "cli download --help -"
+  expected: [--protocol, --user, --verbose, --version, -p, -u, -v]
+
+- compline: "cli download -v -"
+  expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]
+
+- compline: "cli download -u "
+  expected: [alice, bob]
+
+- compline: "cli download -u alice -"
+  expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]
+
+- compline: "cli download -p ssh -"
+  expected: [--help, --user, --verbose, --version, -h, -u, -v]
+
 interleaved:
 - compline: "cli "
   expected: [clone]

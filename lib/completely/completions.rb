@@ -137,10 +137,6 @@ module Completely
       end
     end
 
-    def pattern_route_option_words(route)
-      pattern_route_options(route).flat_map { |option| option[:names] }.uniq
-    end
-
     def pattern_options_with_values
       config.model[:options].values.flatten.select { |option| option[:value] }
     end

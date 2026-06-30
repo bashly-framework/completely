@@ -27,6 +27,7 @@
   fi
 
   local non_options=()
+  local completed_options=()
   local skip_next=0
   for word in "${completed[@]}"; do
     if ((skip_next)); then
@@ -35,6 +36,7 @@
     fi
 
     if [[ "${word:0:1}" == "-" ]]; then
+      completed_options+=("$word")
       if <%= function_name %>_flag_expects_value "$word"; then
         skip_next=1
       fi
@@ -81,7 +83,23 @@
     case "$route_id" in
 % pattern_routes.each do |route|
       <%= pattern_route_id route %>)
-        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "<%= bash_double_quote_escape pattern_route_option_words(route).join(' ') %>" -- "$cur")
+        local words=()
+% pattern_route_options(route).each do |option|
+% if option[:repeatable]
+        words+=(<%= option[:names].map { |name| %["#{bash_escape name}"] }.join(' ') %>)
+% else
+        local option_seen=0
+        for completed_option in "${completed_options[@]}"; do
+          case "$completed_option" in
+            <%= option[:names].map { |name| bash_escape name }.join('|') %>) option_seen=1 ;;
+          esac
+        done
+        if ((!option_seen)); then
+          words+=(<%= option[:names].map { |name| %["#{bash_escape name}"] }.join(' ') %>)
+        fi
+% end
+% end
+        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")
         return
         ;;
 % end

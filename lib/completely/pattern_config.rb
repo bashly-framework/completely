@@ -84,7 +84,7 @@ module Completely
 
     def option_tokens
       option_groups.values.flatten.filter_map do |entry|
-        _flag_part, value_part = option_parts entry
+        value_part = option_parts(entry).find { |part| token? part }
         token_name(value_part) if value_part
       end
     end
@@ -115,16 +115,35 @@ module Completely
     end
 
     def parse_option(entry)
-      flag_part, value_part = option_parts entry
+      flag_part, *parts = option_parts entry
+      value_part = parts.find { |part| token? part }
+      metadata_parts = parts.select { |part| metadata? part }
+      unknown_parts = parts - [value_part] - metadata_parts
+      raise ParseError, "Invalid option syntax: #{entry}" if unknown_parts.any?
+
       names = flag_part.split('|')
 
-      result = { names: names }
+      result = { names: names, repeatable: false }
       result[:value] = parse_token(value_part) if value_part
+      metadata_parts.each { |part| apply_option_metadata result, part }
       result
     end
 
     def option_parts(entry)
-      entry.scan(/<[^>]+>|\S+/)
+      entry.scan(/<[^>]+>|\([^)]+\)|\S+/)
+    end
+
+    def apply_option_metadata(result, part)
+      case part
+      when '(repeatable)'
+        result[:repeatable] = true
+      else
+        raise ParseError, "Unknown option metadata: #{part}"
+      end
+    end
+
+    def metadata?(part)
+      part.start_with?('(') && part.end_with?(')')
     end
 
     def parse_token(part)

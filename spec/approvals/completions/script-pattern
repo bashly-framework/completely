@@ -25,6 +25,7 @@ _mygit_completions() {
   fi
 
   local non_options=()
+  local completed_options=()
   local skip_next=0
   for word in "${completed[@]}"; do
     if ((skip_next)); then
@@ -33,6 +34,7 @@ _mygit_completions() {
     fi
 
     if [[ "${word:0:1}" == "-" ]]; then
+      completed_options+=("$word")
       if _mygit_completions_flag_expects_value "$word"; then
         skip_next=1
       fi
@@ -75,11 +77,40 @@ _mygit_completions() {
   if [[ "${cur:0:1}" == "-" ]]; then
     case "$route_id" in
       0)
-        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "--bare" -- "$cur")
+        local words=()
+        local option_seen=0
+        for completed_option in "${completed_options[@]}"; do
+          case "$completed_option" in
+            --bare) option_seen=1 ;;
+          esac
+        done
+        if ((!option_seen)); then
+          words+=("--bare")
+        fi
+        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")
         return
         ;;
       1)
-        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "--verbose -v --branch -b" -- "$cur")
+        local words=()
+        local option_seen=0
+        for completed_option in "${completed_options[@]}"; do
+          case "$completed_option" in
+            --verbose|-v) option_seen=1 ;;
+          esac
+        done
+        if ((!option_seen)); then
+          words+=("--verbose" "-v")
+        fi
+        local option_seen=0
+        for completed_option in "${completed_options[@]}"; do
+          case "$completed_option" in
+            --branch|-b) option_seen=1 ;;
+          esac
+        done
+        if ((!option_seen)); then
+          words+=("--branch" "-b")
+        fi
+        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")
         return
         ;;
     esac

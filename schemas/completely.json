@@ -33,14 +33,14 @@
       ]
     },
     "option": {
-      "allOf": [
-        { "$ref": "#/definitions/nonEmptyString" }
-      ],
+      "type": "string",
+      "pattern": "^\\S+(?:\\s+<[^>]+>)?(?:\\s+\\(repeatable\\))?$",
       "examples": [
         "--help",
         "--version",
         "-h|--help",
-        "--branch|-b <branch>"
+        "--branch|-b <branch>",
+        "--tag <tag> (repeatable)"
       ]
     },
     "tokenSource": {

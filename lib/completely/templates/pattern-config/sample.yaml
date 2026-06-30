@@ -13,7 +13,7 @@ options:
     - --help
     - --branch|-b <branch>
     - --format <format>
-    - --verbose
+    - --verbose (repeatable)
 
 tokens:
   directory: directory

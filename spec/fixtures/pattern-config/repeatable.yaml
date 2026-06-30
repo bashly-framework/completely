@@ -1,0 +1,14 @@
+patterns:
+  - cli download [download options]
+
+options:
+  download:
+    - -p|--protocol <protocol>
+    - -h|--help
+    - --version
+    - -v|--verbose (repeatable)
+    - -u|--user <name> (repeatable)
+
+tokens:
+  protocol: [http, ssh]
+  name: [alice, bob]
