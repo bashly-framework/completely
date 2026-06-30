@@ -25,7 +25,7 @@ describe PatternConfig do
       positionals = config.model[:routes].map { |route| route[:positionals] }
 
       expect(positionals).to eq [
-        [{ name: 'directory', source: { type: :builtin, value: 'directory' } }],
+        [{ name: 'directory', source: { items: [{ type: :builtin, value: 'directory' }] } }],
         [],
       ]
     end
@@ -47,18 +47,15 @@ describe PatternConfig do
         repeatable: false,
         value:      {
           name:   'branch',
-          source: { type: :command, value: '$(echo main dev)' },
+          source: { items: [{ type: :value, value: '$(echo main dev)' }] },
         }
       )
     end
 
     it 'returns token sources' do
       expect(config.model[:tokens]).to eq(
-        'directory' => { type: :builtin, value: 'directory' },
-        'branch'    => {
-          type:  :command,
-          value: '$(echo main dev)',
-        }
+        'directory' => { items: [{ type: :builtin, value: 'directory' }] },
+        'branch'    => { items: [{ type: :value, value: '$(echo main dev)' }] }
       )
     end
   end
@@ -105,14 +102,34 @@ describe PatternConfig do
   context 'with a nil token source' do
     subject(:config) { Config.load 'spec/fixtures/pattern-config/nil-source.yaml' }
 
-    it 'returns a none source' do
-      expect(config.model[:tokens]['source']).to eq(type: :none)
+    it 'returns an empty source' do
+      expect(config.model[:tokens]['source']).to eq(items: [])
     end
 
-    it 'uses the none source for positionals' do
+    it 'uses the empty source for positionals' do
       expect(config.model[:routes].first[:positionals].first).to eq(
         name:   'source',
-        source: { type: :none }
+        source: { items: [] }
+      )
+    end
+  end
+
+  context 'with a mixed token source' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/mixed-source.yaml' }
+
+    it 'returns builtin and value items' do
+      expect(config.model[:tokens]['target']).to eq(
+        items: [
+          { type: :builtin, value: 'directory' },
+          { type: :value, value: 'target1' },
+          { type: :value, value: '$(echo target2)' },
+        ]
+      )
+    end
+
+    it 'escapes literal values that start with +' do
+      expect(config.model[:tokens]['value']).to eq(
+        items: [{ type: :value, value: '+file' }]
       )
     end
   end
@@ -120,13 +137,22 @@ describe PatternConfig do
   context 'with a repeatable option' do
     subject(:config) { Config.load 'spec/fixtures/pattern-config/repeatable.yaml' }
 
+    let(:name_source) do
+      {
+        items: [
+          { type: :value, value: 'alice' },
+          { type: :value, value: 'bob' },
+        ],
+      }
+    end
+
     it 'marks repeatable options' do
       expect(config.model[:options]['download'].last).to eq(
         names:      ['-u', '--user'],
         repeatable: true,
         value:      {
           name:   'name',
-          source: { type: :values, value: %w[alice bob] },
+          source: name_source,
         }
       )
     end
@@ -135,12 +161,21 @@ describe PatternConfig do
   context 'with repeatable positionals' do
     subject(:config) { Config.load 'spec/fixtures/pattern-config/repeatable-positionals.yaml' }
 
+    let(:file_source) do
+      {
+        items: [
+          { type: :value, value: 'file1' },
+          { type: :value, value: 'file2' },
+        ],
+      }
+    end
+
     it 'marks repeatable positionals' do
       expect(config.model[:routes].first[:positionals]).to eq [
         {
           name:       'file',
           repeatable: true,
-          source:     { type: :values, value: %w[file1 file2] },
+          source:     file_source,
         },
       ]
     end

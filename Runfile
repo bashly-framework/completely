@@ -17,6 +17,7 @@ action :schema do
     spec/fixtures/flat-config/complete_options.yaml
     spec/fixtures/pattern-config/basic.yaml
     spec/fixtures/pattern-config/complete_options.yaml
+    spec/fixtures/pattern-config/mixed-source.yaml
     spec/fixtures/pattern-config/nil-source.yaml
     spec/fixtures/pattern-config/repeatable.yaml
     spec/fixtures/pattern-config/repeatable-positionals.yaml

@@ -141,19 +141,24 @@ module Completely
       config.model[:options].values.flatten.select { |option| option[:value] }
     end
 
-    def pattern_source_none?(source)
-      source[:type] == :none
+    def pattern_source_empty?(source)
+      source[:items].empty?
     end
 
     def pattern_source_compgen(source)
-      case source[:type]
-      when :builtin
-        "-A #{bash_escape source[:value]}"
-      when :command
-        %[-W "#{bash_double_quote_escape source[:value]}"]
-      when :values
-        %[-W "#{bash_double_quote_escape source[:value].join ' '}"]
-      end
+      wordlist = source[:items]
+        .select { |item| item[:type] == :value }
+        .map { |item| item[:value] }
+        .join(' ')
+
+      builtins = source[:items]
+        .select { |item| item[:type] == :builtin }
+        .map { |item| "-A #{bash_escape item[:value]}" }
+
+      parts = []
+      parts << %[-W "#{bash_double_quote_escape wordlist}"] unless wordlist.empty?
+      parts.concat builtins
+      parts.join(' ')
     end
 
     def bash_escape(value)

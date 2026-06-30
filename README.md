@@ -102,7 +102,7 @@ options:
     - --verbose (repeatable)
 
 tokens:
-  directory: directory
+  directory: +directory
   branch: $(git branch --format='%(refname:short)' 2>/dev/null)
   format: [short, long]
 ```
@@ -152,15 +152,18 @@ these forms:
 ```yaml
 tokens:
   source: ~
-  directory: directory
+  directory: +directory
   branch: $(git branch --format='%(refname:short)' 2>/dev/null)
   format: [short, long]
+  target: [+file, +directory, README.md, $(git branch --format='%(refname:short)' 2>/dev/null)]
+  literal: ++file
 ```
 
 - A null value such as `~` defines a token without completion suggestions.
-- A plain string such as `directory` uses a bash built-in completion action.
-- A `$(...)` string runs a command and uses its whitespace-delimited output.
-- An array provides a fixed list of completion words.
+- A value starting with `+`, such as `+directory`, uses a bash built-in completion action.
+- A value starting with `++`, such as `++file`, provides the literal completion word `+file`.
+- Plain strings, including `$(...)` command substitutions, are added to the completion word list.
+- An array combines multiple source items.
 
 Every `[name]` option group and every `<token>` used by patterns or options must
 be defined. This keeps typos from generating broken completion scripts.
@@ -246,8 +249,8 @@ Pattern config uses named tokens:
 
 ```yaml
 tokens:
-  file: file
-  directory: directory
+  file: +file
+  directory: +directory
   branch: $(git branch --format='%(refname:short)' 2>/dev/null)
   format: [short, long]
 ```

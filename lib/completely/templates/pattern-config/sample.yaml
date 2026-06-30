@@ -16,6 +16,6 @@ options:
     - --verbose (repeatable)
 
 tokens:
-  directory: directory
+  directory: +directory
   branch: $(git branch --format='%(refname:short)' 2>/dev/null)
   format: [short, long]

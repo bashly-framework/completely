@@ -166,16 +166,16 @@ module Completely
     end
 
     def parse_source(_name, source)
-      case source
-      when nil
-        { type: :none }
-      when Array
-        { type: :values, value: source }
-      when /^\$\(.*\)$/
-        { type: :command, value: source }
-      when String
-        { type: :builtin, value: source }
-      end
+      source_items = source.is_a?(Array) ? source : [source]
+      items = source_items.compact.map { |item| parse_source_item item }
+      { items: items }
+    end
+
+    def parse_source_item(item)
+      return { type: :value, value: item.to_s[1..] } if item.to_s.start_with? '++'
+      return { type: :builtin, value: item.to_s[1..] } if item.to_s.start_with? '+'
+
+      { type: :value, value: item.to_s }
     end
 
     def option_group?(part)

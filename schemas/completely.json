@@ -51,8 +51,9 @@
             { "$ref": "#/definitions/nonEmptyString" }
           ],
           "examples": [
-            "directory",
-            "file",
+            "+directory",
+            "+file",
+            "README.md",
             "$(git branch --format='%(refname:short)' 2>/dev/null)"
           ]
         },
@@ -61,7 +62,9 @@
           "items": { "$ref": "#/definitions/tokenValue" },
           "examples": [
             ["short", "long"],
-            [0, 10, 100]
+            [0, 10, 100],
+            ["+file", "+directory", "README.md"],
+            [null, "+file"]
           ]
         },
         {
@@ -73,6 +76,7 @@
     "tokenValue": {
       "oneOf": [
         { "$ref": "#/definitions/nonEmptyString" },
+        { "type": "null" },
         { "type": "number" },
         { "type": "boolean" }
       ]

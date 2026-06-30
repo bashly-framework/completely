@@ -92,6 +92,16 @@ nil-source:
 - compline: "cli copy source1 t"
   expected: [target1, target2]
 
+mixed-source:
+- compline: "cli copy "
+  expected: [another-dir, dir with spaces, dummy-dir, target1, target2]
+
+- compline: "cli copy t"
+  expected: [target1, target2]
+
+- compline: "cli literal "
+  expected: ["+file"]
+
 repeatable-positionals:
 - compline: "cli "
   expected: [copy, upload]

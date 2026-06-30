@@ -10,5 +10,5 @@ options:
     - --branch|-b <branch>
 
 tokens:
-  directory: directory
+  directory: +directory
   branch: $(echo main dev)
