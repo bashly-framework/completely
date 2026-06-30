@@ -11,9 +11,9 @@ module Completely
 
       @model ||= {
         program: program,
-        routes: routes,
+        routes:  routes,
         options: options,
-        tokens: tokens,
+        tokens:  tokens,
       }
     end
 
@@ -127,7 +127,7 @@ module Completely
       { name: name, source: parse_source(name, token_sources[name]) }
     end
 
-    def parse_source(name, source)
+    def parse_source(_name, source)
       case source
       when Array
         { type: :values, value: source }

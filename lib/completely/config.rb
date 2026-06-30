@@ -19,7 +19,7 @@ module Completely
       end
 
       def pattern_config?(config)
-        config.is_a?(Hash) && config.key?('patterns')
+        config.is_a?(Hash) && config.has_key?('patterns')
       end
     end
   end

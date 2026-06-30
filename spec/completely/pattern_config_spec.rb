@@ -6,58 +6,53 @@ describe PatternConfig do
       expect(config.model[:program]).to eq 'mygit'
     end
 
-    it 'returns routes from the completion patterns' do
-      expect(config.model[:routes]).to eq [
-        {
-          words: [
-            { name: 'mygit', aliases: [] },
-            { name: 'init', aliases: [] },
-          ],
-          option_groups: ['init'],
-          positionals: [
-            {
-              name: 'directory',
-              source: { type: :builtin, value: 'directory' },
-            },
-          ],
-        },
-        {
-          words: [
-            { name: 'mygit', aliases: [] },
-            { name: 'status', aliases: ['st'] },
-          ],
-          option_groups: ['status'],
-          positionals: [],
-        },
+    it 'returns route words' do
+      words = config.model[:routes].map { |route| route[:words] }
+
+      expect(words).to eq [
+        [{ name: 'mygit', aliases: [] }, { name: 'init', aliases: [] }],
+        [{ name: 'mygit', aliases: [] }, { name: 'status', aliases: ['st'] }],
       ]
     end
 
-    it 'returns option groups' do
-      expect(config.model[:options]).to eq(
-        'init' => [
-          { names: ['--bare'] },
-        ],
-        'status' => [
-          { names: ['--verbose', '-v'] },
-          {
-            names: ['--branch', '-b'],
-            value: {
-              name: 'branch',
-              source: {
-                type: :command,
-                value: '$(echo main dev)',
-              },
-            },
-          },
-        ]
+    it 'returns route option groups' do
+      option_groups = config.model[:routes].map { |route| route[:option_groups] }
+
+      expect(option_groups).to eq [['init'], ['status']]
+    end
+
+    it 'returns route positionals' do
+      positionals = config.model[:routes].map { |route| route[:positionals] }
+
+      expect(positionals).to eq [
+        [{ name: 'directory', source: { type: :builtin, value: 'directory' } }],
+        [],
+      ]
+    end
+
+    it 'returns init options' do
+      expect(config.model[:options]['init']).to eq [{ names: ['--bare'] }]
+    end
+
+    it 'returns status flag options' do
+      expect(config.model[:options]['status'].first).to eq({ names: ['--verbose', '-v'] })
+    end
+
+    it 'returns status options with values' do
+      expect(config.model[:options]['status'].last).to eq(
+        names: ['--branch', '-b'],
+        value: {
+          name:   'branch',
+          source: { type: :command, value: '$(echo main dev)' },
+        }
       )
     end
 
     it 'returns token sources' do
       expect(config.model[:tokens]).to eq(
         'directory' => { type: :builtin, value: 'directory' },
-        'branch' => {
-          type: :command,
+        'branch'    => {
+          type:  :command,
           value: '$(echo main dev)',
         }
       )
