@@ -33,7 +33,7 @@ module Completely
       def sample_path
         @sample_path ||= begin
           sample_name = nested? ? 'sample-nested' : 'sample'
-          File.expand_path "../templates/#{sample_name}.yaml", __dir__
+          File.expand_path "../templates/flat-config/#{sample_name}.yaml", __dir__
         end
       end
     end

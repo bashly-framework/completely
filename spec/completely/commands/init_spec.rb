@@ -4,8 +4,8 @@ describe Commands::Init do
   before { system 'rm -f completely.yaml' }
   after  { system 'rm -f completely.yaml' }
 
-  let(:sample) { File.read 'lib/completely/templates/sample.yaml' }
-  let(:sample_nested) { File.read 'lib/completely/templates/sample-nested.yaml' }
+  let(:sample) { File.read 'lib/completely/templates/flat-config/sample.yaml' }
+  let(:sample_nested) { File.read 'lib/completely/templates/flat-config/sample-nested.yaml' }
 
   context 'with --help' do
     it 'shows long usage' do
@@ -53,7 +53,7 @@ describe Commands::Init do
   end
 
   context 'when the config file already exists' do
-    before { system 'cp lib/completely/templates/sample.yaml completely.yaml' }
+    before { system 'cp lib/completely/templates/flat-config/sample.yaml completely.yaml' }
     after  { system 'rm -f completely.yaml' }
 
     it 'raises an error' do

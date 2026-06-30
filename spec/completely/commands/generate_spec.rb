@@ -3,7 +3,7 @@ describe Commands::Generate do
 
   before do
     reset_tmp_dir
-    system 'cp lib/completely/templates/sample.yaml completely.yaml'
+    system 'cp lib/completely/templates/flat-config/sample.yaml completely.yaml'
   end
 
   after do
@@ -43,7 +43,7 @@ describe Commands::Generate do
   context 'with COMPLETELY_CONFIG_PATH env var' do
     before do
       reset_tmp_dir
-      system 'cp lib/completely/templates/sample.yaml spec/tmp/hello.yml'
+      system 'cp lib/completely/templates/flat-config/sample.yaml spec/tmp/hello.yml'
       system 'rm -f completely.yaml'
       ENV['COMPLETELY_CONFIG_PATH'] = 'spec/tmp/hello.yml'
     end
