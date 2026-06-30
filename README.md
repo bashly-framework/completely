@@ -151,11 +151,13 @@ these forms:
 
 ```yaml
 tokens:
+  source: ~
   directory: directory
   branch: $(git branch --format='%(refname:short)' 2>/dev/null)
   format: [short, long]
 ```
 
+- A null value such as `~` defines a token without completion suggestions.
 - A plain string such as `directory` uses a bash built-in completion action.
 - A `$(...)` string runs a command and uses its whitespace-delimited output.
 - An array provides a fixed list of completion words.

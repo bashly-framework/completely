@@ -72,8 +72,12 @@
 % pattern_routes.each do |route|
 % pattern_route_options(route).select { |option| option[:value] }.each do |option|
     <%= pattern_route_id route %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_route_id route}:") %>)
+% if pattern_source_none? option[:value][:source]
+      return
+% else
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen <%= pattern_source_compgen option[:value][:source] %> -- "$cur")
       return
+% end
       ;;
 % end
 % end
@@ -110,8 +114,12 @@
 % route[:positionals].each_with_index do |positional, index|
 % next unless positional[:repeatable]
   if [[ "$route_id" == "<%= pattern_route_id route %>" ]] && (( positional_index >= <%= index %> )); then
+% if pattern_source_none? positional[:source]
+    return
+% else
     while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen <%= pattern_source_compgen positional[:source] %> -- "$cur")
     return
+% end
   fi
 
 % end
@@ -121,8 +129,12 @@
 % route[:positionals].each_with_index do |positional, index|
 % next if positional[:repeatable]
     <%= pattern_route_id route %>:<%= index %>)
+% if pattern_source_none? positional[:source]
+      return
+% else
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen <%= pattern_source_compgen positional[:source] %> -- "$cur")
       return
+% end
       ;;
 % end
 % end

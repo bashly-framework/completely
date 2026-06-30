@@ -167,6 +167,8 @@ module Completely
 
     def parse_source(_name, source)
       case source
+      when nil
+        { type: :none }
       when Array
         { type: :values, value: source }
       when /^\$\(.*\)$/

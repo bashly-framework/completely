@@ -141,6 +141,10 @@ module Completely
       config.model[:options].values.flatten.select { |option| option[:value] }
     end
 
+    def pattern_source_none?(source)
+      source[:type] == :none
+    end
+
     def pattern_source_compgen(source)
       case source[:type]
       when :builtin

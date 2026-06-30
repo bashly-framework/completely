@@ -102,6 +102,21 @@ describe PatternConfig do
     end
   end
 
+  context 'with a nil token source' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/nil-source.yaml' }
+
+    it 'returns a none source' do
+      expect(config.model[:tokens]['source']).to eq(type: :none)
+    end
+
+    it 'uses the none source for positionals' do
+      expect(config.model[:routes].first[:positionals].first).to eq(
+        name:   'source',
+        source: { type: :none }
+      )
+    end
+  end
+
   context 'with a repeatable option' do
     subject(:config) { Config.load 'spec/fixtures/pattern-config/repeatable.yaml' }
 

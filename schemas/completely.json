@@ -63,6 +63,10 @@
             ["short", "long"],
             [0, 10, 100]
           ]
+        },
+        {
+          "type": "null",
+          "examples": [null]
         }
       ]
     },
