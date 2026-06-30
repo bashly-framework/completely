@@ -66,6 +66,22 @@ describe PatternConfig do
     end
   end
 
+  context 'when complete_options is defined' do
+    subject(:config) { Config.load 'spec/fixtures/pattern-config/complete_options.yaml' }
+
+    describe 'config' do
+      it 'ignores the completely_options YAML key' do
+        expect(config.config.keys).to eq %w[patterns tokens]
+      end
+    end
+
+    describe 'options' do
+      it 'returns the completely_options hash from the YAML file' do
+        expect(config.options[:complete_options]).to eq '-o nosort'
+      end
+    end
+  end
+
   context 'with a missing option group' do
     subject(:config) { Config.load 'spec/fixtures/pattern-config/missing-option.yaml' }
 

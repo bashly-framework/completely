@@ -351,9 +351,10 @@ autoload -Uz +X bashcompinit && bashcompinit
 ## Customizing the `complete` command
 
 In case you wish to customize the `complete` command call in the generated
-script for flat or nested config, you can do so by adding any additional flags
-to the `completely.yaml` configuration file using the special
-`completely_options` key. For example:
+script, you can do so by adding any additional flags to the
+`completely.yaml` configuration file using the special `completely_options`
+key. Completely passes these options to Bash's `complete` command as is. For
+example:
 
 ```yaml
 completely_options:

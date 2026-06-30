@@ -99,6 +99,6 @@
 % end
   esac
 } &&
-  complete -F <%= function_name %> <%= command %>
+  complete <%= complete_options_line %>-F <%= function_name %> <%= command %>
 
 # ex: filetype=sh

@@ -80,6 +80,14 @@ describe Completions do
         expect(subject.script).to match_approval 'completions/script-complete-options'
       end
     end
+
+    context 'with a pattern configuration file that includes complete_options' do
+      let(:path) { 'spec/fixtures/pattern-config/complete_options.yaml' }
+
+      it 'adds the complete_options to the complete command' do
+        expect(subject.script).to match_approval 'completions/script-pattern-complete-options'
+      end
+    end
   end
 
   describe '#wrapper_function' do

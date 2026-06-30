@@ -1,8 +1,9 @@
 module Completely
   class PatternConfig
-    attr_reader :config
+    attr_reader :config, :options
 
     def initialize(config)
+      @options = config.delete('completely_options')&.transform_keys(&:to_sym) || {}
       @config = config
     end
 
@@ -12,7 +13,7 @@ module Completely
       @model ||= {
         program: program,
         routes:  routes,
-        options: options,
+        options: parsed_options,
         tokens:  tokens,
       }
     end
@@ -43,8 +44,8 @@ module Completely
       @routes ||= patterns.map { |pattern| parse_pattern pattern }
     end
 
-    def options
-      @options ||= option_groups.to_h do |name, entries|
+    def parsed_options
+      @parsed_options ||= option_groups.to_h do |name, entries|
         [name, Array(entries).map { |entry| parse_option entry }]
       end
     end

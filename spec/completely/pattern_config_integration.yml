@@ -34,6 +34,10 @@ spaced-token:
 - compline: "mygit status --format l"
   expected: [long]
 
+complete_options:
+- compline: "cli set "
+  expected: ['0', '10', '100', '20', '30', '40', '50', '60', '70', '80', '90']
+
 interleaved:
 - compline: "cli "
   expected: [clone]
