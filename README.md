@@ -352,7 +352,7 @@ input = {
     "status" => ["--verbose|-v", "--branch|-b <branch>"]
   },
   "tokens" => {
-    "directory" => "directory",
+    "directory" => "+directory",
     "branch" => "$(git branch --format='%(refname:short)' 2>/dev/null)"
   }
 }
