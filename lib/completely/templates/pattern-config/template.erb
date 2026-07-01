@@ -16,6 +16,19 @@
   return 1
 }
 
+% if pattern_has_unique_options?
+<%= function_name %>_option_seen() {
+  local completed_option option_name
+  for completed_option in "${completed_options[@]}"; do
+    for option_name in "$@"; do
+      [[ "$completed_option" == "$option_name" ]] && return 0
+    done
+  done
+
+  return 1
+}
+
+% end
 <%= function_name %>_resolve_route() {
   route_id=
   route_word_count=-1
@@ -108,15 +121,7 @@
 % if option[:repeatable]
         words+=(<%= option[:names].map { |name| %["#{bash_escape name}"] }.join(' ') %>)
 % else
-        local option_seen=0
-        for completed_option in "${completed_options[@]}"; do
-          case "$completed_option" in
-            <%= option[:names].map { |name| bash_escape name }.join('|') %>) option_seen=1 ;;
-          esac
-        done
-        if ((!option_seen)); then
-          words+=(<%= option[:names].map { |name| %["#{bash_escape name}"] }.join(' ') %>)
-        fi
+        <%= function_name %>_option_seen <%= option[:names].map { |name| %["#{bash_escape name}"] }.join(' ') %> || words+=(<%= option[:names].map { |name| %["#{bash_escape name}"] }.join(' ') %>)
 % end
 % end
         while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")
