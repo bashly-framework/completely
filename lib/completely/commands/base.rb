@@ -6,7 +6,7 @@ module Completely
       class << self
         def param_config_path
           param 'CONFIG_PATH', <<~USAGE
-            Path to the YAML configuration file [default: completely.yaml].
+            Path to the Completely YAML configuration file (pattern, flat, or nested) [default: completely.yaml].
             Can also be set by an environment variable.
           USAGE
         end
@@ -18,7 +18,7 @@ module Completely
 
         def environment_config_path
           environment 'COMPLETELY_CONFIG_PATH',
-            'Path to a completely configuration file [default: completely.yaml].'
+            'Path to a Completely YAML configuration file [default: completely.yaml].'
         end
 
         def environment_debug
@@ -62,7 +62,7 @@ module Completely
 
       def syntax_warning
         say! "\nr`WARNING:`\nr`Your configuration is invalid.`"
-        say! 'r`All patterns must start with the same word.`'
+        say! 'r`All completion patterns must use the same command name.`'
       end
     end
   end

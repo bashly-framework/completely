@@ -1,0 +1,8 @@
+patterns:
+  - cli upload <file>...
+  - cli copy <source> <target>...
+
+tokens:
+  file: [file1, file2]
+  source: [source1, source2]
+  target: [target1, target2]

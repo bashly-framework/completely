@@ -21,7 +21,8 @@ Options:
 
 Parameters:
   CONFIG_PATH
-    Path to the YAML configuration file [default: completely.yaml].
+    Path to the Completely YAML configuration file (pattern, flat, or nested)
+    [default: completely.yaml].
     Use '-' to read from stdin.
     
     Can also be set by an environment variable.
@@ -38,7 +39,7 @@ Parameters:
 
 Environment Variables:
   COMPLETELY_CONFIG_PATH
-    Path to a completely configuration file [default: completely.yaml].
+    Path to a Completely YAML configuration file [default: completely.yaml].
 
   COMPLETELY_OUTPUT_PATH
     Path to the output bash script.

@@ -1,0 +1,7 @@
+patterns:
+  - cli copy <target>
+  - cli literal <value>
+
+tokens:
+  target: [~, +directory, target1, $(echo target2)]
+  value: [++file]

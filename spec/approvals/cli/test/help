@@ -1,8 +1,8 @@
 Test completions
 
 This command can be used to test that your completions script responds with the
-right completions. It works by reading your completely.yaml file, generating a
-completions script, and generating a temporary testing script.
+right completions. It works by reading a Completely YAML configuration file,
+generating a completions script, and generating a temporary testing script.
 
 Usage:
   completely test [--keep] COMPLINE...
@@ -24,7 +24,7 @@ Parameters:
 
 Environment Variables:
   COMPLETELY_CONFIG_PATH
-    Path to a completely configuration file [default: completely.yaml].
+    Path to a Completely YAML configuration file [default: completely.yaml].
 
   COMPLETELY_DEBUG
     If not empty, the generated script will include an additional debugging

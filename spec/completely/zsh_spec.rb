@@ -5,7 +5,7 @@ describe 'zsh compatibility' do
     end
   end
 
-  let(:completions) { Completely::Completions.load 'spec/fixtures/basic.yaml' }
+  let(:completions) { Completely::Completions.load 'spec/fixtures/flat-config/basic.yaml' }
   let(:words) { 'completely generate ' }
   let(:tester_script) { completions.tester.tester_script words }
   let(:shell) { 'zsh' }

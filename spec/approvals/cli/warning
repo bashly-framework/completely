@@ -1,4 +1,4 @@
 
 WARNING:
 Your configuration is invalid.
-All patterns must start with the same word.
+All completion patterns must use the same command name.

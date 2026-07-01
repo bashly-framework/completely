@@ -1,0 +1,157 @@
+basic:
+- compline: "mygit "
+  expected: [init, st, status]
+
+- compline: "mygit stat"
+  expected: [status]
+
+- compline: "mygit status -"
+  expected: [--branch, --verbose, -b, -v]
+
+- compline: "mygit init "
+  expected: [another-dir, dir with spaces, dummy-dir]
+
+- compline: "mygit st -"
+  expected: [--branch, --verbose, -b, -v]
+
+- compline: "mygit status --branch "
+  expected: [dev, main]
+
+- compline: "mygit status -b m"
+  expected: [main]
+
+- compline: "mygit init d"
+  expected: [dir with spaces, dummy-dir]
+
+- compline: "mygit init dummy-dir -"
+  expected: [--bare]
+
+static-values:
+- compline: "mygit deploy st"
+  expected: [staging]
+
+spaced-token:
+- compline: "mygit status --format l"
+  expected: [long]
+
+complete_options:
+- compline: "cli set "
+  expected: ['0', '10', '100', '20', '30', '40', '50', '60', '70', '80', '90']
+
+route-specificity:
+- compline: "cli "
+  expected: [r, repo]
+
+- compline: "cli -"
+  expected: [--root, --user]
+
+- compline: "cli repo -"
+  expected: [--repo, --user]
+
+- compline: "cli repo remote -"
+  expected: [--remote]
+
+- compline: "cli r rm -"
+  expected: [--remote]
+
+- compline: "cli repo --root remote -"
+  expected: [--remote]
+
+- compline: "cli repo --user admin remote -"
+  expected: [--remote]
+
+route-specificity-reversed:
+- compline: "cli repo remote -"
+  expected: [--remote]
+
+- compline: "cli repo -"
+  expected: [--repo]
+
+- compline: "cli -"
+  expected: [--root]
+
+repeatable:
+- compline: "cli download -"
+  expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]
+
+- compline: "cli download --version -"
+  expected: [--help, --protocol, --user, --verbose, -h, -p, -u, -v]
+
+- compline: "cli download -h -"
+  expected: [--protocol, --user, --verbose, --version, -p, -u, -v]
+
+- compline: "cli download --help -"
+  expected: [--protocol, --user, --verbose, --version, -p, -u, -v]
+
+- compline: "cli download -v -"
+  expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]
+
+- compline: "cli download -u "
+  expected: [alice, bob]
+
+- compline: "cli download -u alice -"
+  expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]
+
+- compline: "cli download -p ssh -"
+  expected: [--help, --user, --verbose, --version, -h, -u, -v]
+
+interleaved:
+- compline: "cli "
+  expected: [clone]
+
+- compline: "cli clone "
+  expected: [source1, source2]
+
+- compline: "cli clone -v "
+  expected: [source1, source2]
+
+- compline: "cli clone -v source1 "
+  expected: [dest1, dest2]
+
+- compline: "cli clone -v source1 -p "
+  expected: [https, ssh]
+
+- compline: "cli clone -v source1 -p ssh "
+  expected: [dest1, dest2]
+
+nil-source:
+- compline: "cli copy "
+  expected: []
+
+- compline: "cli copy source1 "
+  expected: [target1, target2]
+
+- compline: "cli copy source1 t"
+  expected: [target1, target2]
+
+mixed-source:
+- compline: "cli copy "
+  expected: [another-dir, dir with spaces, dummy-dir, target1, target2]
+
+- compline: "cli copy t"
+  expected: [target1, target2]
+
+- compline: "cli literal "
+  expected: ["+file"]
+
+repeatable-positionals:
+- compline: "cli "
+  expected: [copy, upload]
+
+- compline: "cli upload "
+  expected: [file1, file2]
+
+- compline: "cli upload file1 "
+  expected: [file1, file2]
+
+- compline: "cli upload file1 file2 "
+  expected: [file1, file2]
+
+- compline: "cli copy "
+  expected: [source1, source2]
+
+- compline: "cli copy source1 "
+  expected: [target1, target2]
+
+- compline: "cli copy source1 target1 "
+  expected: [target1, target2]

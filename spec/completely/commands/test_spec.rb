@@ -2,11 +2,14 @@ describe Commands::Test do
   subject { described_class.new }
 
   before do
-    system 'cp lib/completely/templates/sample.yaml completely.yaml'
+    system 'cp lib/completely/templates/flat-config/sample.yaml completely.yaml'
     ENV['COMPLETELY_CONFIG_PATH'] = nil
   end
 
-  after { system 'rm -f completely.yaml' }
+  after do
+    system 'rm -f completely.yaml'
+    ENV['COMPLETELY_CONFIG_PATH'] = nil
+  end
 
   context 'with --help' do
     it 'shows long usage' do

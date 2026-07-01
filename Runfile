@@ -11,17 +11,30 @@ import 'debug'
 help   'Test the completely JSON schema'
 action :schema do
   files = %w[
-    lib/completely/templates/sample.yaml
-    lib/completely/templates/sample-nested.yaml
-    spec/fixtures/complete_options.yaml
+    lib/completely/templates/pattern-config/sample.yaml
+    lib/completely/templates/flat-config/sample.yaml
+    lib/completely/templates/flat-config/sample-nested.yaml
+    spec/fixtures/flat-config/complete_options.yaml
+    spec/fixtures/pattern-config/basic.yaml
+    spec/fixtures/pattern-config/complete_options.yaml
+    spec/fixtures/pattern-config/mixed-source.yaml
+    spec/fixtures/pattern-config/nil-source.yaml
+    spec/fixtures/pattern-config/repeatable.yaml
+    spec/fixtures/pattern-config/repeatable-positionals.yaml
+    spec/fixtures/pattern-config/spaced-token.yaml
   ]
 
   files.each do |file|
     command = "check-jsonschema --schemafile schemas/completely.json #{file}"
     say "\n$ check-jsonschema bb`#{file}`"
     success = system command
-    exit 1 unless success
+    unless success
+      say 'r`FAILED`'
+      exit 1
+    end
   end
+
+  say 'g`ALL PASS`'
 end
 
 help   'Run preconfigured shfmt on any script'

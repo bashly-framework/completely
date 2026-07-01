@@ -1,13 +1,29 @@
 describe Completions do
   subject { described_class.load path }
 
-  let(:path) { "spec/fixtures/#{file}.yaml" }
+  let(:path) { "spec/fixtures/flat-config/#{file}.yaml" }
   let(:file) { 'basic' }
 
   describe '::read' do
     it 'reads from io' do
       io = double :io, read: 'cli: [--help, --version]'
       expect(described_class.read(io).config.config).to eq({ 'cli' => %w[--help --version] })
+    end
+  end
+
+  describe '#initialize' do
+    it 'builds a config from a hash' do
+      completions = described_class.new({ 'cli' => %w[--help --version] })
+
+      expect(completions.config).to be_a FlatConfig
+      expect(completions.config.config).to eq({ 'cli' => %w[--help --version] })
+    end
+
+    it 'accepts a built config object' do
+      config = FlatConfig.new({ 'cli' => %w[--help --version] })
+      completions = described_class.new config
+
+      expect(completions.config).to be config
     end
   end
 
@@ -25,6 +41,22 @@ describe Completions do
         expect(subject).not_to be_valid
       end
     end
+
+    context 'with pattern config' do
+      let(:path) { 'spec/fixtures/pattern-config/basic.yaml' }
+
+      it 'returns true when all patterns use the same program' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'with pattern config using different programs' do
+      let(:path) { 'spec/fixtures/pattern-config/invalid-programs.yaml' }
+
+      it 'returns false' do
+        expect(subject).not_to be_valid
+      end
+    end
   end
 
   describe '#patterns' do
@@ -37,6 +69,14 @@ describe Completions do
   describe '#script' do
     it 'returns a bash completions script' do
       expect(subject.script).to match_approval 'completions/script'
+    end
+
+    context 'with a pattern configuration file' do
+      let(:path) { 'spec/fixtures/pattern-config/basic.yaml' }
+
+      it 'returns a bash completions script' do
+        expect(subject.script).to match_approval 'completions/script-pattern'
+      end
     end
 
     context 'with a configuration file that only includes patterns with spaces' do
@@ -62,6 +102,14 @@ describe Completions do
 
       it 'adds the complete_options to the complete command' do
         expect(subject.script).to match_approval 'completions/script-complete-options'
+      end
+    end
+
+    context 'with a pattern configuration file that includes complete_options' do
+      let(:path) { 'spec/fixtures/pattern-config/complete_options.yaml' }
+
+      it 'adds the complete_options to the complete command' do
+        expect(subject.script).to match_approval 'completions/script-pattern-complete-options'
       end
     end
   end

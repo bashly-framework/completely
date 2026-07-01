@@ -3,12 +3,12 @@ require 'completely/commands/base'
 module Completely
   module Commands
     class Init < Base
-      help 'Create a new sample YAML configuration file'
+      help 'Create a new sample Completely YAML configuration file'
 
-      usage 'completely init [--nested] [CONFIG_PATH]'
+      usage 'completely init [--format FORMAT] [CONFIG_PATH]'
       usage 'completely init (-h|--help)'
 
-      option '-n --nested', 'Generate a nested configuration'
+      option '-f --format FORMAT', 'Sample format: pattern, flat, or nested [default: pattern]'
 
       param_config_path
       environment_config_path
@@ -26,15 +26,28 @@ module Completely
         @sample ||= File.read sample_path
       end
 
-      def nested?
-        args['--nested']
+      def format
+        @format ||= args['--format'] || 'pattern'
       end
 
       def sample_path
         @sample_path ||= begin
-          sample_name = nested? ? 'sample-nested' : 'sample'
-          File.expand_path "../templates/#{sample_name}.yaml", __dir__
+          raise Error, "Invalid format: #{format}" unless sample_filenames.key? format
+
+          File.expand_path "../templates/#{sample_filename}", __dir__
         end
+      end
+
+      def sample_filename
+        sample_filenames.fetch format
+      end
+
+      def sample_filenames
+        @sample_filenames ||= {
+          'flat'    => 'flat-config/sample.yaml',
+          'nested'  => 'flat-config/sample-nested.yaml',
+          'pattern' => 'pattern-config/sample.yaml',
+        }
       end
     end
   end

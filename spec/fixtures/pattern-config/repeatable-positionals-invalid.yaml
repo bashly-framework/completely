@@ -1,0 +1,6 @@
+patterns:
+  - cli copy <source>... <target>
+
+tokens:
+  source: [source1, source2]
+  target: [target1, target2]

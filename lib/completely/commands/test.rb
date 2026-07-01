@@ -6,8 +6,8 @@ module Completely
       summary 'Test completions'
 
       help 'This command can be used to test that your completions script responds with ' \
-        'the right completions. It works by reading your completely.yaml file, generating ' \
-        'a completions script, and generating a temporary testing script.'
+        'the right completions. It works by reading a Completely YAML configuration file, ' \
+        'generating a completions script, and generating a temporary testing script.'
 
       usage 'completely test [--keep] COMPLINE...'
       usage 'completely test (-h|--help)'

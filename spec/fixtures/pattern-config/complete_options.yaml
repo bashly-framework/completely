@@ -1,0 +1,8 @@
+completely_options:
+  complete_options: -o nosort
+
+patterns:
+  - cli set <level>
+
+tokens:
+  level: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
