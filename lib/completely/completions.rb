@@ -137,6 +137,12 @@ module Completely
       end
     end
 
+    def pattern_has_unique_options?
+      pattern_routes.any? do |route|
+        pattern_route_options(route).any? { |option| !option[:repeatable] }
+      end
+    end
+
     def pattern_source_empty?(source)
       source[:items].empty?
     end
