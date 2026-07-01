@@ -32,18 +32,22 @@ module Completely
 
       def sample_path
         @sample_path ||= begin
-          raise Error, "Invalid format: #{format}" unless %w[flat nested pattern].include? format
+          raise Error, "Invalid format: #{format}" unless sample_filenames.key? format
 
           File.expand_path "../templates/#{sample_filename}", __dir__
         end
       end
 
       def sample_filename
-        {
+        sample_filenames.fetch format
+      end
+
+      def sample_filenames
+        @sample_filenames ||= {
           'flat'    => 'flat-config/sample.yaml',
           'nested'  => 'flat-config/sample-nested.yaml',
           'pattern' => 'pattern-config/sample.yaml',
-        }[format]
+        }
       end
     end
   end

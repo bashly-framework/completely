@@ -11,6 +11,22 @@ describe Completions do
     end
   end
 
+  describe '#initialize' do
+    it 'builds a config from a hash' do
+      completions = described_class.new({ 'cli' => %w[--help --version] })
+
+      expect(completions.config).to be_a FlatConfig
+      expect(completions.config.config).to eq({ 'cli' => %w[--help --version] })
+    end
+
+    it 'accepts a built config object' do
+      config = FlatConfig.new({ 'cli' => %w[--help --version] })
+      completions = described_class.new config
+
+      expect(completions.config).to be config
+    end
+  end
+
   describe '#valid?' do
     context 'when all patterns start with the same word' do
       it 'returns true' do

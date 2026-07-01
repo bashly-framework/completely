@@ -16,7 +16,7 @@ module Completely
     end
 
     def initialize(config, function_name: nil)
-      @config = config.respond_to?(:flat_config) ? config : Config.build(config)
+      @config = normalize_config config
       @function_name = function_name
     end
 
@@ -167,6 +167,15 @@ module Completely
 
     def bash_double_quote_escape(value)
       value.to_s.gsub('\\', '\\\\\\').gsub('"', '\\"')
+    end
+
+    def normalize_config(config)
+      case config
+      when FlatConfig, PatternConfig
+        config
+      else
+        Config.build config
+      end
     end
   end
 end
