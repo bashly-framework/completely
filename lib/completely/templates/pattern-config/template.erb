@@ -47,23 +47,27 @@
   done
 
   local route_id=
+  local route_word_count=-1
+  local route_has_positionals=0
   local positional_index=0
 % pattern_routes.each do |route|
 % conditions = pattern_route_conditions(route)
-% next if conditions.empty?
   if (( ${#non_options[@]} >= <%= pattern_route_word_count route %> )) &&
+    (( <%= pattern_route_word_count route %> > route_word_count ))<%= conditions.empty? ? '' : ' &&' %>
 % conditions.each_with_index do |condition, index|
     [[ <%= condition %> ]]<%= index == conditions.size - 1 ? '' : ' &&' %>
 % end
   then
     route_id=<%= pattern_route_id route %>
+    route_word_count=<%= pattern_route_word_count route %>
+    route_has_positionals=<%= route[:positionals].empty? ? 0 : 1 %>
     positional_index=$((${#non_options[@]} - <%= pattern_route_word_count route %>))
   fi
 
 % end
   COMPREPLY=()
 
-  if [[ -z "$route_id" ]]; then
+  if [[ -z "$route_id" ]] || { (( route_word_count == 0 )) && (( !route_has_positionals )) && [[ "${cur:0:1}" != "-" ]]; }; then
     while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "<%= bash_double_quote_escape pattern_root_words.join(' ') %>" -- "$cur")
     return
   fi

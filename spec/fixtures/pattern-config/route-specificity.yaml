@@ -1,0 +1,17 @@
+patterns:
+  - cli [root options]
+  - cli repo|r [repo options]
+  - cli repo|r remote|rm [remote options]
+
+options:
+  root:
+    - --root
+    - --user <user>
+  repo:
+    - --repo
+    - --user <user>
+  remote:
+    - --remote
+
+tokens:
+  user: [admin, guest]

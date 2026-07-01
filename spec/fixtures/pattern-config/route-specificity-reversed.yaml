@@ -1,0 +1,13 @@
+patterns:
+  - cli repo|r remote|rm [remote options]
+  - cli repo|r [repo options]
+  - cli [root options]
+
+options:
+  root:
+    - --root
+  repo:
+    - --repo
+  remote:
+    - --remote
+

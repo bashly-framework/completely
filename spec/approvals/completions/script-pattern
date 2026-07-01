@@ -45,24 +45,32 @@ _mygit_completions() {
   done
 
   local route_id=
+  local route_word_count=-1
+  local route_has_positionals=0
   local positional_index=0
   if (( ${#non_options[@]} >= 1 )) &&
+    (( 1 > route_word_count )) &&
     [[ "${non_options[0]}" == "init" ]]
   then
     route_id=0
+    route_word_count=1
+    route_has_positionals=1
     positional_index=$((${#non_options[@]} - 1))
   fi
 
   if (( ${#non_options[@]} >= 1 )) &&
+    (( 1 > route_word_count )) &&
     [[ "${non_options[0]}" == "status" || "${non_options[0]}" == "st" ]]
   then
     route_id=1
+    route_word_count=1
+    route_has_positionals=0
     positional_index=$((${#non_options[@]} - 1))
   fi
 
   COMPREPLY=()
 
-  if [[ -z "$route_id" ]]; then
+  if [[ -z "$route_id" ]] || { (( route_word_count == 0 )) && (( !route_has_positionals )) && [[ "${cur:0:1}" != "-" ]]; }; then
     while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "init status st" -- "$cur")
     return
   fi

@@ -38,6 +38,38 @@ complete_options:
 - compline: "cli set "
   expected: ['0', '10', '100', '20', '30', '40', '50', '60', '70', '80', '90']
 
+route-specificity:
+- compline: "cli "
+  expected: [r, repo]
+
+- compline: "cli -"
+  expected: [--root, --user]
+
+- compline: "cli repo -"
+  expected: [--repo, --user]
+
+- compline: "cli repo remote -"
+  expected: [--remote]
+
+- compline: "cli r rm -"
+  expected: [--remote]
+
+- compline: "cli repo --root remote -"
+  expected: [--remote]
+
+- compline: "cli repo --user admin remote -"
+  expected: [--remote]
+
+route-specificity-reversed:
+- compline: "cli repo remote -"
+  expected: [--remote]
+
+- compline: "cli repo -"
+  expected: [--repo]
+
+- compline: "cli -"
+  expected: [--root]
+
 repeatable:
 - compline: "cli download -"
   expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]
