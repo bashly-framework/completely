@@ -137,10 +137,6 @@ module Completely
       end
     end
 
-    def pattern_options_with_values
-      config.model[:options].values.flatten.select { |option| option[:value] }
-    end
-
     def pattern_source_empty?(source)
       source[:items].empty?
     end

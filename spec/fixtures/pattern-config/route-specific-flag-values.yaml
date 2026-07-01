@@ -1,0 +1,21 @@
+patterns:
+  - cli [root]
+  - cli connect [connect]
+  - cli approve [approve]
+
+options:
+  root:
+    - -h|--help
+    - --version
+
+  connect:
+    - -u|--user <username>
+    - -h|--help
+
+  approve:
+    - -u|--user
+    - -a|--admin
+    - -h|--help
+
+tokens:
+  username: [admin, user]

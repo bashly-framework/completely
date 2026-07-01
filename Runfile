@@ -21,6 +21,7 @@ action :schema do
     spec/fixtures/pattern-config/nil-source.yaml
     spec/fixtures/pattern-config/repeatable.yaml
     spec/fixtures/pattern-config/repeatable-positionals.yaml
+    spec/fixtures/pattern-config/route-specific-flag-values.yaml
     spec/fixtures/pattern-config/spaced-token.yaml
   ]
 

@@ -70,6 +70,19 @@ route-specificity-reversed:
 - compline: "cli -"
   expected: [--root]
 
+route-specific-flag-values:
+- compline: "cli connect --user "
+  expected: [admin, user]
+
+- compline: "cli connect --user admin -"
+  expected: [--help, -h]
+
+- compline: "cli approve --user -"
+  expected: [--admin, --help, -a, -h]
+
+- compline: "cli approve --user --admin -"
+  expected: [--help, -h]
+
 repeatable:
 - compline: "cli download -"
   expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]

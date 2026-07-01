@@ -4,14 +4,38 @@
 # completely (https://github.com/bashly-framework/completely)
 # Modifying it manually is not recommended
 
-<%= function_name %>_flag_expects_value() {
-  case "$1" in
-% pattern_options_with_values.each do |option|
-    <%= option[:names].map { |name| bash_escape name }.join('|') %>) return 0 ;;
+<%= function_name %>_route_flag_expects_value() {
+  case "$1:$2" in
+% pattern_routes.each do |route|
+% pattern_route_options(route).select { |option| option[:value] }.each do |option|
+    <%= pattern_route_id route %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_route_id route}:") %>) return 0 ;;
+% end
 % end
   esac
 
   return 1
+}
+
+<%= function_name %>_resolve_route() {
+  route_id=
+  route_word_count=-1
+  route_has_positionals=0
+  positional_index=0
+% pattern_routes.each do |route|
+% conditions = pattern_route_conditions(route)
+  if (( ${#non_options[@]} >= <%= pattern_route_word_count route %> )) &&
+    (( <%= pattern_route_word_count route %> > route_word_count ))<%= conditions.empty? ? '' : ' &&' %>
+% conditions.each_with_index do |condition, index|
+    [[ <%= condition %> ]]<%= index == conditions.size - 1 ? '' : ' &&' %>
+% end
+  then
+    route_id=<%= pattern_route_id route %>
+    route_word_count=<%= pattern_route_word_count route %>
+    route_has_positionals=<%= route[:positionals].empty? ? 0 : 1 %>
+    positional_index=$((${#non_options[@]} - <%= pattern_route_word_count route %>))
+  fi
+
+% end
 }
 
 <%= function_name %>() {
@@ -28,6 +52,12 @@
 
   local non_options=()
   local completed_options=()
+  local route_id=
+  local route_word_count=-1
+  local route_has_positionals=0
+  local positional_index=0
+  <%= function_name %>_resolve_route
+
   local skip_next=0
   for word in "${completed[@]}"; do
     if ((skip_next)); then
@@ -37,34 +67,16 @@
 
     if [[ "${word:0:1}" == "-" ]]; then
       completed_options+=("$word")
-      if <%= function_name %>_flag_expects_value "$word"; then
+      if <%= function_name %>_route_flag_expects_value "$route_id" "$word"; then
         skip_next=1
       fi
       continue
     fi
 
     non_options+=("$word")
+    <%= function_name %>_resolve_route
   done
 
-  local route_id=
-  local route_word_count=-1
-  local route_has_positionals=0
-  local positional_index=0
-% pattern_routes.each do |route|
-% conditions = pattern_route_conditions(route)
-  if (( ${#non_options[@]} >= <%= pattern_route_word_count route %> )) &&
-    (( <%= pattern_route_word_count route %> > route_word_count ))<%= conditions.empty? ? '' : ' &&' %>
-% conditions.each_with_index do |condition, index|
-    [[ <%= condition %> ]]<%= index == conditions.size - 1 ? '' : ' &&' %>
-% end
-  then
-    route_id=<%= pattern_route_id route %>
-    route_word_count=<%= pattern_route_word_count route %>
-    route_has_positionals=<%= route[:positionals].empty? ? 0 : 1 %>
-    positional_index=$((${#non_options[@]} - <%= pattern_route_word_count route %>))
-  fi
-
-% end
   COMPREPLY=()
 
   if [[ -z "$route_id" ]] || { (( route_word_count == 0 )) && (( !route_has_positionals )) && [[ "${cur:0:1}" != "-" ]]; }; then
