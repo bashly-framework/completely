@@ -12,6 +12,16 @@ _mygit_completions_node_flag_expects_value() {
   return 1
 }
 
+_mygit_completions_node_has_flag() {
+  case "$1:$2" in
+    1:--bare) return 0 ;;
+    2:--verbose|2:-v) return 0 ;;
+    2:--branch|2:-b) return 0 ;;
+  esac
+
+  return 1
+}
+
 _mygit_completions_option_seen() {
   local completed_option option_name
   for completed_option in "${completed_options[@]}"; do
@@ -69,6 +79,7 @@ _mygit_completions() {
   local node_id=
   local node_word_count=-1
   local positional_index=0
+  local invalid_completion=0
   _mygit_completions_resolve_node
 
   local skip_next=0
@@ -79,6 +90,11 @@ _mygit_completions() {
     fi
 
     if [[ "${word:0:1}" == "-" ]]; then
+      if ! _mygit_completions_node_has_flag "$node_id" "$word"; then
+        invalid_completion=1
+        break
+      fi
+
       completed_options+=("$word")
       if _mygit_completions_node_flag_expects_value "$node_id" "$word"; then
         skip_next=1
@@ -91,6 +107,7 @@ _mygit_completions() {
   done
 
   COMPREPLY=()
+  (( invalid_completion )) && return
 
   case "$node_id:$prev" in
     2:--branch|2:-b)

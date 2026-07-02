@@ -55,6 +55,9 @@ route-specificity:
   expected: [--remote]
 
 - compline: "cli repo --root remote -"
+  expected: []
+
+- compline: "cli --root repo remote -"
   expected: [--remote]
 
 - compline: "cli repo --user admin remote -"
@@ -182,11 +185,17 @@ tree-options:
 - compline: "docker --config config-a container "
   expected: [cp]
 
+- compline: "docker --bad container "
+  expected: []
+
 - compline: "docker container "
   expected: [cp]
 
 - compline: "docker container -"
   expected: [--latest]
+
+- compline: "docker container --bad "
+  expected: []
 
 - compline: "docker container cp -"
   expected: [--archive, -a]
@@ -199,3 +208,6 @@ tree-options:
 
 - compline: "docker container cp local.txt "
   expected: [./out, container:/tmp]
+
+- compline: "docker container cp --bad local.txt "
+  expected: []

@@ -17,6 +17,19 @@
   return 1
 }
 
+<%= function_name %>_node_has_flag() {
+  case "$1:$2" in
+% pattern_nodes.each do |entry|
+% node = entry[:node]
+% pattern_node_options(node).each do |option|
+    <%= pattern_node_id node %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_node_id node}:") %>) return 0 ;;
+% end
+% end
+  esac
+
+  return 1
+}
+
 % if pattern_has_unique_options?
 <%= function_name %>_option_seen() {
   local completed_option option_name
@@ -73,6 +86,7 @@
   local node_id=
   local node_word_count=-1
   local positional_index=0
+  local invalid_completion=0
   <%= function_name %>_resolve_node
 
   local skip_next=0
@@ -83,6 +97,11 @@
     fi
 
     if [[ "${word:0:1}" == "-" ]]; then
+      if ! <%= function_name %>_node_has_flag "$node_id" "$word"; then
+        invalid_completion=1
+        break
+      fi
+
       completed_options+=("$word")
       if <%= function_name %>_node_flag_expects_value "$node_id" "$word"; then
         skip_next=1
@@ -95,6 +114,7 @@
   done
 
   COMPREPLY=()
+  (( invalid_completion )) && return
 
   case "$node_id:$prev" in
 % pattern_nodes.each do |entry|
