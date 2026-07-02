@@ -4,11 +4,15 @@
 # completely (https://github.com/bashly-framework/completely)
 # Modifying it manually is not recommended
 
-<%= function_name %>_route_flag_expects_value() {
+<%= function_name %>_node_flag_state() {
   case "$1:$2" in
-% pattern_routes.each do |route|
-% pattern_route_options(route).select { |option| option[:value] }.each do |option|
-    <%= pattern_route_id route %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_route_id route}:") %>) return 0 ;;
+% pattern_nodes.each do |entry|
+% node = entry[:node]
+% pattern_node_options(node).select { |option| option[:value] }.each do |option|
+    <%= pattern_node_id node %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_node_id node}:") %>) return 2 ;;
+% end
+% pattern_node_options(node).reject { |option| option[:value] }.each do |option|
+    <%= pattern_node_id node %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_node_id node}:") %>) return 0 ;;
 % end
 % end
   esac
@@ -29,26 +33,30 @@
 }
 
 % end
-<%= function_name %>_resolve_route() {
-  route_id=
-  route_word_count=-1
-  route_has_positionals=0
+<%= function_name %>_resolve_node() {
+  node_id=0
+  node_word_count=0
   positional_index=0
-% pattern_routes.each do |route|
-% conditions = pattern_route_conditions(route)
-  if (( ${#non_options[@]} >= <%= pattern_route_word_count route %> )) &&
-    (( <%= pattern_route_word_count route %> > route_word_count ))<%= conditions.empty? ? '' : ' &&' %>
-% conditions.each_with_index do |condition, index|
-    [[ <%= condition %> ]]<%= index == conditions.size - 1 ? '' : ' &&' %>
-% end
-  then
-    route_id=<%= pattern_route_id route %>
-    route_word_count=<%= pattern_route_word_count route %>
-    route_has_positionals=<%= route[:positionals].empty? ? 0 : 1 %>
-    positional_index=$((${#non_options[@]} - <%= pattern_route_word_count route %>))
-  fi
 
+  local word
+  for word in "${non_options[@]}"; do
+    case "$node_id:$word" in
+% pattern_nodes.each do |entry|
+% node = entry[:node]
+% pattern_child_transitions(node).each do |transition|
+      <%= pattern_node_id node %>:<%= bash_escape transition[:name] %>)
+        node_id=<%= pattern_node_id transition[:node] %>
+        node_word_count=<%= pattern_node_depth transition[:node] %>
+        ;;
 % end
+% end
+      *)
+        break
+        ;;
+    esac
+  done
+
+  positional_index=$((${#non_options[@]} - node_word_count))
 }
 
 <%= function_name %>() {
@@ -65,11 +73,12 @@
 
   local non_options=()
   local completed_options=()
-  local route_id=
-  local route_word_count=-1
-  local route_has_positionals=0
+  local node_id=
+  local node_word_count=-1
   local positional_index=0
-  <%= function_name %>_resolve_route
+  local invalid_completion=0
+  local flag_state=0
+  <%= function_name %>_resolve_node
 
   local skip_next=0
   for word in "${completed[@]}"; do
@@ -79,28 +88,32 @@
     fi
 
     if [[ "${word:0:1}" == "-" ]]; then
+      <%= function_name %>_node_flag_state "$node_id" "$word"
+      flag_state=$?
+      if (( flag_state == 1 )); then
+        invalid_completion=1
+        break
+      fi
+
       completed_options+=("$word")
-      if <%= function_name %>_route_flag_expects_value "$route_id" "$word"; then
+      if (( flag_state == 2 )); then
         skip_next=1
       fi
       continue
     fi
 
     non_options+=("$word")
-    <%= function_name %>_resolve_route
+    <%= function_name %>_resolve_node
   done
 
   COMPREPLY=()
+  (( invalid_completion )) && return
 
-  if [[ -z "$route_id" ]] || { (( route_word_count == 0 )) && (( !route_has_positionals )) && [[ "${cur:0:1}" != "-" ]]; }; then
-    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "<%= bash_double_quote_escape pattern_root_words.join(' ') %>" -- "$cur")
-    return
-  fi
-
-  case "$route_id:$prev" in
-% pattern_routes.each do |route|
-% pattern_route_options(route).select { |option| option[:value] }.each do |option|
-    <%= pattern_route_id route %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_route_id route}:") %>)
+  case "$node_id:$prev" in
+% pattern_nodes.each do |entry|
+% node = entry[:node]
+% pattern_node_options(node).select { |option| option[:value] }.each do |option|
+    <%= pattern_node_id node %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_node_id node}:") %>)
 % if pattern_source_empty? option[:value][:source]
       return
 % else
@@ -112,12 +125,27 @@
 % end
   esac
 
+  if [[ "${cur:0:1}" != "-" ]] && (( positional_index == 0 )); then
+    case "$node_id" in
+% pattern_nodes.each do |entry|
+% node = entry[:node]
+% child_words = pattern_node_child_words(node)
+% next if child_words.empty?
+      <%= pattern_node_id node %>)
+        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "<%= bash_double_quote_escape child_words.join(' ') %>" -- "$cur")
+        return
+        ;;
+% end
+    esac
+  fi
+
   if [[ "${cur:0:1}" == "-" ]]; then
-    case "$route_id" in
-% pattern_routes.each do |route|
-      <%= pattern_route_id route %>)
+    case "$node_id" in
+% pattern_nodes.each do |entry|
+% node = entry[:node]
+      <%= pattern_node_id node %>)
         local words=()
-% pattern_route_options(route).each do |option|
+% pattern_node_options(node).each do |option|
 % if option[:repeatable]
         words+=(<%= option[:names].map { |name| %["#{bash_escape name}"] }.join(' ') %>)
 % else
@@ -131,10 +159,11 @@
     esac
   fi
 
-% pattern_routes.each do |route|
-% route[:positionals].each_with_index do |positional, index|
+% pattern_nodes.each do |entry|
+% node = entry[:node]
+% node[:positionals].each_with_index do |positional, index|
 % next unless positional[:repeatable]
-  if [[ "$route_id" == "<%= pattern_route_id route %>" ]] && (( positional_index >= <%= index %> )); then
+  if [[ "$node_id" == "<%= pattern_node_id node %>" ]] && (( positional_index >= <%= index %> )); then
 % if pattern_source_empty? positional[:source]
     return
 % else
@@ -145,11 +174,12 @@
 
 % end
 % end
-  case "$route_id:$positional_index" in
-% pattern_routes.each do |route|
-% route[:positionals].each_with_index do |positional, index|
+  case "$node_id:$positional_index" in
+% pattern_nodes.each do |entry|
+% node = entry[:node]
+% node[:positionals].each_with_index do |positional, index|
 % next if positional[:repeatable]
-    <%= pattern_route_id route %>:<%= index %>)
+    <%= pattern_node_id node %>:<%= index %>)
 % if pattern_source_empty? positional[:source]
       return
 % else

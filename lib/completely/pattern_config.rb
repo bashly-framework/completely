@@ -11,10 +11,11 @@ module Completely
       validate!
 
       @model ||= {
-        program: program,
-        routes:  routes,
-        options: parsed_options,
-        tokens:  tokens,
+        program:  program,
+        programs: programs,
+        tree:     tree,
+        options:  parsed_options,
+        tokens:   tokens,
       }
     end
 
@@ -37,11 +38,63 @@ module Completely
     end
 
     def program
-      routes.first.dig(:words, 0, :name)
+      programs.first
     end
 
-    def routes
-      @routes ||= patterns.map { |pattern| parse_pattern pattern }
+    def programs
+      @programs ||= patterns.filter_map do |pattern|
+        part = pattern_parts(pattern).find { |pattern_part| command_word? pattern_part }
+        parse_word(part)[:name] if part
+      end
+    end
+
+    def tree
+      @tree ||= begin
+        root = nil
+
+        patterns.each do |pattern|
+          current = nil
+
+          pattern_parts(pattern).each do |part|
+            if option_group?(part)
+              add_option_group current, option_group_name(part)
+            elsif token?(part)
+              current[:positionals] << parse_token(part)
+            else
+              word = parse_word part
+              current = current ? find_or_create_child(current, word) : (root ||= build_tree_node(word))
+              merge_word! current[:word], word
+            end
+          end
+        end
+
+        root
+      end
+    end
+
+    def build_tree_node(word)
+      { word: word, option_groups: [], positionals: [], children: [] }
+    end
+
+    def add_option_group(node, name)
+      node[:option_groups] << name unless node[:option_groups].include? name
+    end
+
+    def find_or_create_child(node, word)
+      node[:children].find { |child| same_word? child[:word], word } ||
+        node[:children].tap { |children| children << build_tree_node(word) }.last
+    end
+
+    def same_word?(left, right)
+      word_names(left).intersect? word_names(right)
+    end
+
+    def word_names(word)
+      [word[:name], *word[:aliases]]
+    end
+
+    def merge_word!(target, source)
+      target[:aliases] = (word_names(target) | word_names(source)) - [target[:name]]
     end
 
     def parsed_options
@@ -97,22 +150,6 @@ module Completely
         value_part = option_parts(entry).find { |part| token? part }
         token_name(value_part) if value_part
       end
-    end
-
-    def parse_pattern(pattern)
-      result = { words: [], option_groups: [], positionals: [] }
-
-      pattern_parts(pattern).each do |part|
-        if option_group?(part)
-          result[:option_groups] << option_group_name(part)
-        elsif token?(part)
-          result[:positionals] << parse_token(part)
-        else
-          result[:words] << parse_word(part)
-        end
-      end
-
-      result
     end
 
     def parse_word(part)
@@ -180,6 +217,10 @@ module Completely
 
     def option_group?(part)
       part.start_with?('[') && part.end_with?(']')
+    end
+
+    def command_word?(part)
+      !option_group?(part) && !token?(part)
     end
 
     def option_group_name(part)

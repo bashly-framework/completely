@@ -6,28 +6,8 @@ describe PatternConfig do
       expect(config.model[:program]).to eq 'mygit'
     end
 
-    it 'returns route words' do
-      words = config.model[:routes].map { |route| route[:words] }
-
-      expect(words).to eq [
-        [{ name: 'mygit', aliases: [] }, { name: 'init', aliases: [] }],
-        [{ name: 'mygit', aliases: [] }, { name: 'status', aliases: ['st'] }],
-      ]
-    end
-
-    it 'returns route option groups' do
-      option_groups = config.model[:routes].map { |route| route[:option_groups] }
-
-      expect(option_groups).to eq [['init'], ['status']]
-    end
-
-    it 'returns route positionals' do
-      positionals = config.model[:routes].map { |route| route[:positionals] }
-
-      expect(positionals).to eq [
-        [{ name: 'directory', source: { items: [{ type: :builtin, value: 'directory' }] } }],
-        [],
-      ]
+    it 'returns program names from all patterns' do
+      expect(config.model[:programs]).to eq %w[mygit mygit]
     end
 
     it 'returns init options' do
@@ -57,6 +37,34 @@ describe PatternConfig do
         'directory' => { items: [{ type: :builtin, value: 'directory' }] },
         'branch'    => { items: [{ type: :value, value: '$(echo main dev)' }] }
       )
+    end
+
+    it 'returns the command tree root' do
+      tree = config.model[:tree]
+
+      expect(tree[:word]).to eq(name: 'mygit', aliases: [])
+      expect(tree[:option_groups]).to eq []
+      expect(tree[:positionals]).to eq []
+    end
+
+    it 'returns child command nodes' do
+      children = config.model[:tree][:children]
+
+      expect(children.map { |child| child[:word] }).to eq [
+        { name: 'init', aliases: [] },
+        { name: 'status', aliases: ['st'] },
+      ]
+    end
+
+    it 'returns child node option groups and positionals' do
+      init, status = config.model[:tree][:children]
+
+      expect(init[:option_groups]).to eq ['init']
+      expect(init[:positionals]).to eq [
+        { name: 'directory', source: { items: [{ type: :builtin, value: 'directory' }] } },
+      ]
+      expect(status[:option_groups]).to eq ['status']
+      expect(status[:positionals]).to eq []
     end
   end
 
@@ -107,7 +115,7 @@ describe PatternConfig do
     end
 
     it 'uses the empty source for positionals' do
-      expect(config.model[:routes].first[:positionals].first).to eq(
+      expect(config.model[:tree][:children].first[:positionals].first).to eq(
         name:   'source',
         source: { items: [] }
       )
@@ -171,7 +179,7 @@ describe PatternConfig do
     end
 
     it 'marks repeatable positionals' do
-      expect(config.model[:routes].first[:positionals]).to eq [
+      expect(config.model[:tree][:children].first[:positionals]).to eq [
         {
           name:       'file',
           repeatable: true,
@@ -197,6 +205,50 @@ describe PatternConfig do
 
     it 'raises ParseError' do
       expect { config.model }.to raise_error Completely::ParseError, 'Unknown option metadata: (hidden)'
+    end
+  end
+
+  context 'with option groups between command words' do
+    subject(:config) do
+      Config.parse <<~YAML
+        patterns:
+          - docker [global options] container [container options]
+          - docker [global options] container push [push options] <container>
+
+        options:
+          global:
+            - --config <file>
+          container:
+            - --context <context>
+          push:
+            - --all-tags
+
+        tokens:
+          file: +file
+          context: [default, remote]
+          container: [app, worker]
+      YAML
+    end
+
+    it 'attaches option groups to the command node where they appear' do
+      tree = config.model[:tree]
+      container = tree[:children].first
+      push = container[:children].first
+
+      expect(tree[:option_groups]).to eq ['global']
+      expect(container[:option_groups]).to eq ['container']
+      expect(push[:option_groups]).to eq ['push']
+    end
+
+    it 'keeps positionals on the command node where they appear' do
+      push = config.model[:tree][:children].first[:children].first
+
+      expect(push[:positionals]).to eq [
+        {
+          name:   'container',
+          source: { items: [{ type: :value, value: 'app' }, { type: :value, value: 'worker' }] },
+        },
+      ]
     end
   end
 end

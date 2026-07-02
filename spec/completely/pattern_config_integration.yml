@@ -55,6 +55,9 @@ route-specificity:
   expected: [--remote]
 
 - compline: "cli repo --root remote -"
+  expected: []
+
+- compline: "cli --root repo remote -"
   expected: [--remote]
 
 - compline: "cli repo --user admin remote -"
@@ -168,3 +171,43 @@ repeatable-positionals:
 
 - compline: "cli copy source1 target1 "
   expected: [target1, target2]
+
+tree-options:
+- compline: "docker "
+  expected: [container]
+
+- compline: "docker -"
+  expected: [--config, --quiet]
+
+- compline: "docker --config "
+  expected: [config-a, config-b]
+
+- compline: "docker --config config-a container "
+  expected: [cp]
+
+- compline: "docker --bad container "
+  expected: []
+
+- compline: "docker container "
+  expected: [cp]
+
+- compline: "docker container -"
+  expected: [--latest]
+
+- compline: "docker container --bad "
+  expected: []
+
+- compline: "docker container cp -"
+  expected: [--archive, -a]
+
+- compline: "docker container cp --"
+  expected: [--archive]
+
+- compline: "docker container cp "
+  expected: [container:/app, local.txt]
+
+- compline: "docker container cp local.txt "
+  expected: [./out, container:/tmp]
+
+- compline: "docker container cp --bad local.txt "
+  expected: []
