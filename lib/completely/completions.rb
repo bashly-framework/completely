@@ -101,46 +101,59 @@ module Completely
       config.is_a? PatternConfig
     end
 
-    def pattern_routes
-      config.model[:routes]
+    def pattern_tree
+      config.model[:tree]
+    end
+
+    def pattern_nodes
+      @pattern_nodes ||= flatten_pattern_tree pattern_tree
     end
 
     def pattern_programs
-      pattern_routes.map { |route| route.dig(:words, 0, :name) }
+      config.model[:programs]
     end
 
-    def pattern_root_words
-      pattern_routes.flat_map do |route|
-        word = route[:words][1]
-        word ? [word[:name], *word[:aliases]] : []
-      end.uniq
+    def pattern_node_id(node)
+      pattern_nodes.index { |entry| entry[:node].equal? node }
     end
 
-    def pattern_route_id(route)
-      pattern_routes.index route
-    end
-
-    def pattern_route_conditions(route)
-      route[:words][1..].map.with_index do |word, index|
-        names = [word[:name], *word[:aliases]]
-        names.map { |name| %["${non_options[#{index}]}" == "#{bash_escape name}"] }.join(' || ')
-      end
-    end
-
-    def pattern_route_word_count(route)
-      route[:words].size - 1
-    end
-
-    def pattern_route_options(route)
-      route[:option_groups].flat_map do |name|
+    def pattern_node_options(node)
+      node[:option_groups].flat_map do |name|
         config.model[:options][name] || []
       end
     end
 
-    def pattern_has_unique_options?
-      pattern_routes.any? do |route|
-        pattern_route_options(route).any? { |option| !option[:repeatable] }
+    def pattern_node_depth(node)
+      pattern_nodes.dig(pattern_node_id(node), :depth)
+    end
+
+    def pattern_child_transitions(node)
+      node[:children].flat_map do |child|
+        pattern_word_names(child[:word]).map do |name|
+          { name: name, node: child }
+        end
       end
+    end
+
+    def pattern_node_child_words(node)
+      node[:children].flat_map { |child| pattern_word_names child[:word] }.uniq
+    end
+
+    def pattern_has_unique_options?
+      pattern_nodes.any? do |entry|
+        pattern_node_options(entry[:node]).any? { |option| !option[:repeatable] }
+      end
+    end
+
+    def pattern_word_names(word)
+      [word[:name], *word[:aliases]]
+    end
+
+    def flatten_pattern_tree(node, depth = 0)
+      [
+        { node: node, depth: depth },
+        *node[:children].flat_map { |child| flatten_pattern_tree child, depth + 1 },
+      ]
     end
 
     def pattern_source_empty?(source)

@@ -1,0 +1,17 @@
+patterns:
+  - docker [global options] container [container options]
+  - docker [global options] container cp [cp options] <source> <dest>
+
+options:
+  global:
+    - --quiet
+    - --config <file>
+  container:
+    - --latest
+  cp:
+    - -a|--archive
+
+tokens:
+  file: [config-a, config-b]
+  source: [container:/app, local.txt]
+  dest: [container:/tmp, ./out]

@@ -4,9 +4,9 @@
 # completely (https://github.com/bashly-framework/completely)
 # Modifying it manually is not recommended
 
-_mygit_completions_route_flag_expects_value() {
+_mygit_completions_node_flag_expects_value() {
   case "$1:$2" in
-    1:--branch|1:-b) return 0 ;;
+    2:--branch|2:-b) return 0 ;;
   esac
 
   return 1
@@ -23,31 +23,33 @@ _mygit_completions_option_seen() {
   return 1
 }
 
-_mygit_completions_resolve_route() {
-  route_id=
-  route_word_count=-1
-  route_has_positionals=0
+_mygit_completions_resolve_node() {
+  node_id=0
+  node_word_count=0
   positional_index=0
-  if (( ${#non_options[@]} >= 1 )) &&
-    (( 1 > route_word_count )) &&
-    [[ "${non_options[0]}" == "init" ]]
-  then
-    route_id=0
-    route_word_count=1
-    route_has_positionals=1
-    positional_index=$((${#non_options[@]} - 1))
-  fi
 
-  if (( ${#non_options[@]} >= 1 )) &&
-    (( 1 > route_word_count )) &&
-    [[ "${non_options[0]}" == "status" || "${non_options[0]}" == "st" ]]
-  then
-    route_id=1
-    route_word_count=1
-    route_has_positionals=0
-    positional_index=$((${#non_options[@]} - 1))
-  fi
+  local word
+  for word in "${non_options[@]}"; do
+    case "$node_id:$word" in
+      0:init)
+        node_id=1
+        node_word_count=1
+        ;;
+      0:status)
+        node_id=2
+        node_word_count=1
+        ;;
+      0:st)
+        node_id=2
+        node_word_count=1
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
 
+  positional_index=$((${#non_options[@]} - node_word_count))
 }
 
 _mygit_completions() {
@@ -64,11 +66,10 @@ _mygit_completions() {
 
   local non_options=()
   local completed_options=()
-  local route_id=
-  local route_word_count=-1
-  local route_has_positionals=0
+  local node_id=
+  local node_word_count=-1
   local positional_index=0
-  _mygit_completions_resolve_route
+  _mygit_completions_resolve_node
 
   local skip_next=0
   for word in "${completed[@]}"; do
@@ -79,39 +80,48 @@ _mygit_completions() {
 
     if [[ "${word:0:1}" == "-" ]]; then
       completed_options+=("$word")
-      if _mygit_completions_route_flag_expects_value "$route_id" "$word"; then
+      if _mygit_completions_node_flag_expects_value "$node_id" "$word"; then
         skip_next=1
       fi
       continue
     fi
 
     non_options+=("$word")
-    _mygit_completions_resolve_route
+    _mygit_completions_resolve_node
   done
 
   COMPREPLY=()
 
-  if [[ -z "$route_id" ]] || { (( route_word_count == 0 )) && (( !route_has_positionals )) && [[ "${cur:0:1}" != "-" ]]; }; then
-    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "init status st" -- "$cur")
-    return
-  fi
-
-  case "$route_id:$prev" in
-    1:--branch|1:-b)
+  case "$node_id:$prev" in
+    2:--branch|2:-b)
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(echo main dev)" -- "$cur")
       return
       ;;
   esac
 
-  if [[ "${cur:0:1}" == "-" ]]; then
-    case "$route_id" in
+  if [[ "${cur:0:1}" != "-" ]] && (( positional_index == 0 )); then
+    case "$node_id" in
       0)
+        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "init status st" -- "$cur")
+        return
+        ;;
+    esac
+  fi
+
+  if [[ "${cur:0:1}" == "-" ]]; then
+    case "$node_id" in
+      0)
+        local words=()
+        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")
+        return
+        ;;
+      1)
         local words=()
         _mygit_completions_option_seen "--bare" || words+=("--bare")
         while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")
         return
         ;;
-      1)
+      2)
         local words=()
         _mygit_completions_option_seen "--verbose" "-v" || words+=("--verbose" "-v")
         _mygit_completions_option_seen "--branch" "-b" || words+=("--branch" "-b")
@@ -121,8 +131,8 @@ _mygit_completions() {
     esac
   fi
 
-  case "$route_id:$positional_index" in
-    0:0)
+  case "$node_id:$positional_index" in
+    1:0)
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -A directory -- "$cur")
       return
       ;;

@@ -32,7 +32,7 @@ module Completely
 
       def sample_path
         @sample_path ||= begin
-          raise Error, "Invalid format: #{format}" unless sample_filenames.key? format
+          raise Error, "Invalid format: #{format}" unless sample_filenames.has_key? format
 
           File.expand_path "../templates/#{sample_filename}", __dir__
         end
