@@ -28,6 +28,7 @@
       ],
       "examples": [
         "mygit [root options]",
+        "mygit [root options] clone [clone options] <source> <dest>",
         "mygit init [init options] <directory>",
         "mygit upload <file>...",
         "mygit status|st [status options]"

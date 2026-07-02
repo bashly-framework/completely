@@ -115,6 +115,33 @@ The `patterns` section describes valid command shapes:
 - `<token>` references `tokens.token`.
 - `<token>...` marks the final positional as repeatable.
 
+Pattern config is compiled as a command tree. Option group placement is
+therefore meaningful: an option group belongs to the command word immediately
+before it. In the example above, `root` options belong to `mygit`, `init`
+options belong to `mygit init`, and `status` options belong to `mygit status`.
+
+This is useful for commands that have global options and command-specific
+options:
+
+```yaml
+patterns:
+  - docker [global options] container [container options]
+  - docker [global options] container cp [cp options] <source> <dest>
+
+options:
+  global:
+    - --config <file>
+  container:
+    - --latest
+  cp:
+    - -a|--archive
+
+tokens:
+  file: +file
+  source: [container:/app, local.txt]
+  dest: [container:/tmp, ./out]
+```
+
 The `options` section defines option groups:
 
 ```yaml
