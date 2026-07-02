@@ -160,6 +160,18 @@ module Completely
       source[:items].empty?
     end
 
+    def pattern_source_with_values(source, values)
+      existing_values = source[:items]
+        .select { |item| item[:type] == :value }
+        .map { |item| item[:value] }
+
+      items = values
+        .reject { |value| existing_values.include? value }
+        .map { |value| { type: :value, value: value } }
+
+      { items: [*items, *source[:items]] }
+    end
+
     def pattern_source_compgen(source)
       wordlist = source[:items]
         .select { |item| item[:type] == :value }

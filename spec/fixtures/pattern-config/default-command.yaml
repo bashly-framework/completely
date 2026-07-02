@@ -1,0 +1,18 @@
+patterns:
+- cli [root_get_default options] <package>
+- cli get|g [get options] <get_package>
+- cli config|c [config options]
+- cli doctor|d
+
+options:
+  root_get_default:
+  - --help|-h
+  - --clone|-c
+  get:
+  - --help|-h
+  config:
+  - --help|-h
+
+tokens:
+  package: [get, g, config, c, hello, world, codex, codex/config]
+  get_package: [hello, world]

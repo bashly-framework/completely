@@ -86,6 +86,25 @@ route-specific-flag-values:
 - compline: "cli approve --user --admin -"
   expected: [--help, -h]
 
+default-command:
+- compline: "cli c"
+  expected: [c, codex, codex/config, config]
+
+- compline: "cli cod"
+  expected: [codex, codex/config]
+
+- compline: "cli d"
+  expected: [d, doctor]
+
+- compline: "cli h"
+  expected: [hello]
+
+- compline: "cli "
+  expected: [c, codex, codex/config, config, d, doctor, g, get, hello, world]
+
+- compline: "cli get "
+  expected: [hello, world]
+
 repeatable:
 - compline: "cli download -"
   expected: [--help, --protocol, --user, --verbose, --version, -h, -p, -u, -v]

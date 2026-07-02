@@ -132,7 +132,12 @@
 % child_words = pattern_node_child_words(node)
 % next if child_words.empty?
       <%= pattern_node_id node %>)
+% first_positional = node[:positionals].first
+% if first_positional && !pattern_source_empty?(first_positional[:source])
+        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen <%= pattern_source_compgen pattern_source_with_values(first_positional[:source], child_words) %> -- "$cur")
+% else
         while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "<%= bash_double_quote_escape child_words.join(' ') %>" -- "$cur")
+% end
         return
         ;;
 % end
