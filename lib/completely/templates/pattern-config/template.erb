@@ -4,24 +4,14 @@
 # completely (https://github.com/bashly-framework/completely)
 # Modifying it manually is not recommended
 
-<%= function_name %>_node_flag_expects_value() {
+<%= function_name %>_node_flag_state() {
   case "$1:$2" in
 % pattern_nodes.each do |entry|
 % node = entry[:node]
 % pattern_node_options(node).select { |option| option[:value] }.each do |option|
-    <%= pattern_node_id node %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_node_id node}:") %>) return 0 ;;
+    <%= pattern_node_id node %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_node_id node}:") %>) return 2 ;;
 % end
-% end
-  esac
-
-  return 1
-}
-
-<%= function_name %>_node_has_flag() {
-  case "$1:$2" in
-% pattern_nodes.each do |entry|
-% node = entry[:node]
-% pattern_node_options(node).each do |option|
+% pattern_node_options(node).reject { |option| option[:value] }.each do |option|
     <%= pattern_node_id node %>:<%= option[:names].map { |name| bash_escape name }.join("|#{pattern_node_id node}:") %>) return 0 ;;
 % end
 % end
@@ -87,6 +77,7 @@
   local node_word_count=-1
   local positional_index=0
   local invalid_completion=0
+  local flag_state=0
   <%= function_name %>_resolve_node
 
   local skip_next=0
@@ -97,13 +88,15 @@
     fi
 
     if [[ "${word:0:1}" == "-" ]]; then
-      if ! <%= function_name %>_node_has_flag "$node_id" "$word"; then
+      <%= function_name %>_node_flag_state "$node_id" "$word"
+      flag_state=$?
+      if (( flag_state == 1 )); then
         invalid_completion=1
         break
       fi
 
       completed_options+=("$word")
-      if <%= function_name %>_node_flag_expects_value "$node_id" "$word"; then
+      if (( flag_state == 2 )); then
         skip_next=1
       fi
       continue

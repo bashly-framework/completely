@@ -4,14 +4,7 @@
 # completely (https://github.com/bashly-framework/completely)
 # Modifying it manually is not recommended
 
-_cli_completions_node_flag_expects_value() {
-  case "$1:$2" in
-  esac
-
-  return 1
-}
-
-_cli_completions_node_has_flag() {
+_cli_completions_node_flag_state() {
   case "$1:$2" in
   esac
 
@@ -57,6 +50,7 @@ _cli_completions() {
   local node_word_count=-1
   local positional_index=0
   local invalid_completion=0
+  local flag_state=0
   _cli_completions_resolve_node
 
   local skip_next=0
@@ -67,13 +61,15 @@ _cli_completions() {
     fi
 
     if [[ "${word:0:1}" == "-" ]]; then
-      if ! _cli_completions_node_has_flag "$node_id" "$word"; then
+      _cli_completions_node_flag_state "$node_id" "$word"
+      flag_state=$?
+      if (( flag_state == 1 )); then
         invalid_completion=1
         break
       fi
 
       completed_options+=("$word")
-      if _cli_completions_node_flag_expects_value "$node_id" "$word"; then
+      if (( flag_state == 2 )); then
         skip_next=1
       fi
       continue

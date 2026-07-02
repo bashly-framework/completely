@@ -142,6 +142,9 @@ tokens:
   dest: [container:/tmp, ./out]
 ```
 
+If a completed command line contains an option that is not valid at the current
+node, Completely stops offering suggestions for that command line.
+
 The `options` section defines option groups:
 
 ```yaml
