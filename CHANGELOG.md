@@ -1,6 +1,17 @@
 Changelog
 ========================================
 
+v0.8.0 - 2026-07-08
+----------------------------------------
+
+- Add a new pattern config format [`d29ad2c`](https://github.com/bashly-framework/completely/commit/d29ad2c)
+- Optimize generated completion script for size [`b157d2e`](https://github.com/bashly-framework/completely/commit/b157d2e)
+- Refactor to a tree walk pattern [`aa56f06`](https://github.com/bashly-framework/completely/commit/aa56f06)
+- Stop offering suggestions on invalid command line [`a1b6936`](https://github.com/bashly-framework/completely/commit/a1b6936)
+- Fix default command positional completion [`3e2c8f5`](https://github.com/bashly-framework/completely/commit/3e2c8f5)
+- Compare [`v0.7.6..v0.8.0`](https://github.com/bashly-framework/completely/compare/v0.7.6..v0.8.0)
+
+
 v0.7.6 - 2026-06-29
 ----------------------------------------
 
