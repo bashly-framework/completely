@@ -11,8 +11,8 @@ This tool is for you if:
 2. Your life feels empty without bash completions.
 3. Bash completion scripts seem overly complex to you.
 
-Note that if you are building bash command line scripts with [bashly][bashly],
-then this functionality is already integrated with it.
+If you are building bash command line scripts with [Bashly][bashly], you do not
+need to use Completely separately. Bashly provides its own completion generator.
 
 ---
 
