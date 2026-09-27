@@ -33,7 +33,7 @@ send_completions() {
   echo $'          break'
   echo $'        fi'
   echo $'      done'
-  echo $'      ((!seen)) && result+=("$word")'
+  echo $'      ((! seen)) && result+=("$word")'
   echo $'    done'
   echo $''
   echo $'    echo "${result[*]}"'

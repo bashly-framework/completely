@@ -33,7 +33,7 @@ give_comps() {
   echo $'          break'
   echo $'        fi'
   echo $'      done'
-  echo $'      ((!seen)) && result+=("$word")'
+  echo $'      ((! seen)) && result+=("$word")'
   echo $'    done'
   echo $''
   echo $'    echo "${result[*]}"'

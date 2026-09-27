@@ -40,7 +40,7 @@ _mygit_completions_filter() {
           break
         fi
       done
-      ((!seen)) && result+=("$word")
+      ((! seen)) && result+=("$word")
     done
 
     echo "${result[*]}"

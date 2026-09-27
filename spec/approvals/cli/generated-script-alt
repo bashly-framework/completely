@@ -32,7 +32,7 @@ _mycomps_filter() {
           break
         fi
       done
-      ((!seen)) && result+=("$word")
+      ((! seen)) && result+=("$word")
     done
 
     echo "${result[*]}"
